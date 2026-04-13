@@ -1,0 +1,74 @@
+<view class="lingli">
+  <!-- 灵力值头部 -->
+  <view class="lingli__header">
+    <view class="lingli__balance-wrap">
+      <text class="lingli__balance-label">当前灵力值</text>
+      <text class="lingli__balance-value">{{balance}}</text>
+    </view>
+    <view class="lingli__quick-actions">
+      <view class="lingli__quick-btn" bindtap="goCheckin">
+        <text>👂 打卡+5</text>
+      </view>
+      <view class="lingli__quick-btn" bindtap="watchAd">
+        <text>📺 看广告+5</text>
+      </view>
+      <view class="lingli__quick-btn lingli__quick-btn--buy" bindtap="goBuy">
+        <text>💎 充值灵力</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 获取途径 -->
+  <view class="lingli__section">
+    <text class="lingli__section-title">获取途径</text>
+    <view class="lingli__ways">
+      <view class="lingli__way-item">
+        <text class="lingli__way-icon">👂</text>
+        <text class="lingli__way-name">每日打卡</text>
+        <text class="lingli__way-amount">+5</text>
+      </view>
+      <view class="lingli__way-item">
+        <text class="lingli__way-icon">🔥</text>
+        <text class="lingli__way-name">连续3天奖励</text>
+        <text class="lingli__way-amount">+10</text>
+      </view>
+      <view class="lingli__way-item">
+        <text class="lingli__way-icon">⚡</text>
+        <text class="lingli__way-name">连续7天奖励</text>
+        <text class="lingli__way-amount">+20</text>
+      </view>
+      <view class="lingli__way-item">
+        <text class="lingli__way-icon">📺</text>
+        <text class="lingli__way-name">观看广告</text>
+        <text class="lingli__way-amount">+5</text>
+      </view>
+      <view class="lingli__way-item">
+        <text class="lingli__way-icon">🎁</text>
+        <text class="lingli__way-name">邀请好友</text>
+        <text class="lingli__way-amount">+20</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 流水记录 -->
+  <view class="lingli__section">
+    <text class="lingli__section-title">灵力明细</text>
+    <view wx:if="{{history.length === 0}}" class="lingli__empty">
+      暂无记录
+    </view>
+    <view class="lingli__history">
+      <view class="lingli__history-item" wx:for="{{history}}" wx:key="_id">
+        <view class="lingli__history-left">
+          <text class="lingli__history-source">{{item.sourceLabel}}</text>
+          <text class="lingli__history-time">{{item.timeLabel}}</text>
+        </view>
+        <text class="lingli__history-amount {{item.type === 'earn' ? 'earn' : 'spend'}}">
+          {{item.type === 'earn' ? '+' : '-'}}{{item.amount}}
+        </text>
+      </view>
+    </view>
+    <view wx:if="{{hasMore}}" class="lingli__load-more" bindtap="loadMore">
+      加载更多
+    </view>
+  </view>
+</view>

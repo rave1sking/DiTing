@@ -1,0 +1,155 @@
+<view class="report">
+  <!-- 八字概览 -->
+  <view class="report__bazi-card">
+    <view class="report__bazi-title">
+      <text>八字四柱</text>
+      <text wx:if="{{userName}}" class="report__bazi-name">{{userName}}</text>
+    </view>
+    <view class="report__bazi-pillars">
+      <view class="report__pillar" wx:for="{{pillarLabels}}" wx:key="index">
+        <text class="report__pillar-label">{{item.label}}</text>
+        <text class="report__pillar-gan">{{item.gan}}</text>
+        <text class="report__pillar-zhi">{{item.zhi}}</text>
+      </view>
+    </view>
+    <view class="report__bazi-meta">
+      <text>日主：{{dayMaster}}（{{dayMasterElement}}）</text>
+      <text>{{lunarInfo}}</text>
+    </view>
+  </view>
+
+  <!-- 姓名五格 -->
+  <view class="report__name-card" wx:if="{{nameGrids.length > 0}}">
+    <view class="report__name-title">姓名五格</view>
+    <view class="report__name-grids">
+      <view class="report__name-grid" wx:for="{{nameGrids}}" wx:key="label">
+        <text class="report__name-grid-label">{{item.label}}</text>
+        <text class="report__name-grid-value">{{item.value}}</text>
+        <text class="report__name-grid-wuxing">{{item.wuxing}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 听听一语 -->
+  <view class="report__summary-card">
+    <view class="report__summary-label">听听一语</view>
+    <view class="report__summary-loading" wx:if="{{summaryLoading}}">
+      <view class="report__loading-glow"></view>
+      <text>谛听正在聆听...</text>
+    </view>
+    <view class="report__summary-text" wx:else>
+      {{summary || '点击生成听听一语'}}
+    </view>
+    <view class="report__summary-action" wx:if="{{!summary && !summaryLoading}}" bindtap="generateSummary">
+      <text>✨ 聆听灵语</text>
+    </view>
+  </view>
+
+  <!-- 五行能量图 -->
+  <view class="report__energy-card">
+    <view class="report__energy-title">今日能量状态</view>
+    <view class="report__energy-chart">
+      <canvas
+        type="2d"
+        id="wuxingCanvas"
+        class="report__canvas"
+      />
+    </view>
+    <view class="report__energy-bars">
+      <view class="report__energy-bar" wx:for="{{wuxingList}}" wx:key="name">
+        <text class="report__energy-name" style="color: {{item.color}}">{{item.name}}</text>
+        <view class="report__energy-track">
+          <view class="report__energy-fill" style="width: {{item.value}}%; background: {{item.color}}"></view>
+        </view>
+        <text class="report__energy-val">{{item.value}}</text>
+      </view>
+    </view>
+    <view class="report__energy-interpretation" wx:if="{{energyInterpretation}}">
+      {{energyInterpretation}}
+    </view>
+  </view>
+
+  <!-- 深度解析 -->
+  <view class="report__deep-card">
+    <view class="report__deep-title">深度解析</view>
+
+    <view wx:if="{{!deepReport && !deepLoading}}" class="report__deep-locked">
+      <view class="report__deep-blur">
+        <view class="report__deep-blur-item">事业运势分析...</view>
+        <view class="report__deep-blur-item">财运能量解读...</view>
+        <view class="report__deep-blur-item">感情状态洞察...</view>
+      </view>
+      <view class="report__deep-unlock" bindtap="unlockDeepReport">
+        <text>🔮 消耗10灵力 解锁深度解析</text>
+      </view>
+      <view class="report__deep-ad" bindtap="watchAdForDeep">
+        <text>📺 看视频广告免费解锁</text>
+      </view>
+    </view>
+
+    <view wx:if="{{deepLoading}}" class="report__deep-loading">
+      <view class="report__loading-glow"></view>
+      <text>谛听正在深度感应，请稍候...</text>
+    </view>
+
+    <view wx:if="{{deepReport}}" class="report__deep-content">
+      <!-- 事业 -->
+      <view class="report__dimension">
+        <view class="report__dimension-header">
+          <text class="report__dimension-icon">💼</text>
+          <text class="report__dimension-name">事业</text>
+          <text class="report__dimension-score">{{deepReport.career.score}}分</text>
+        </view>
+        <view class="report__dimension-analysis">{{deepReport.career.analysis}}</view>
+        <view class="report__dimension-advice">
+          <view wx:for="{{deepReport.career.advice}}" wx:key="index" class="report__advice-item">
+            <text class="report__advice-dot">•</text>
+            <text>{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 财运 -->
+      <view class="report__dimension">
+        <view class="report__dimension-header">
+          <text class="report__dimension-icon">💰</text>
+          <text class="report__dimension-name">财运</text>
+          <text class="report__dimension-score">{{deepReport.wealth.score}}分</text>
+        </view>
+        <view class="report__dimension-analysis">{{deepReport.wealth.analysis}}</view>
+        <view class="report__dimension-advice">
+          <view wx:for="{{deepReport.wealth.advice}}" wx:key="index" class="report__advice-item">
+            <text class="report__advice-dot">•</text>
+            <text>{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 感情 -->
+      <view class="report__dimension">
+        <view class="report__dimension-header">
+          <text class="report__dimension-icon">💕</text>
+          <text class="report__dimension-name">感情</text>
+          <text class="report__dimension-score">{{deepReport.love.score}}分</text>
+        </view>
+        <view class="report__dimension-analysis">{{deepReport.love.analysis}}</view>
+        <view class="report__dimension-advice">
+          <view wx:for="{{deepReport.love.advice}}" wx:key="index" class="report__advice-item">
+            <text class="report__advice-dot">•</text>
+            <text>{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作 -->
+  <view class="report__footer">
+    <view class="report__footer-btn" bindtap="sharePoster">
+      <text>📤 生成海报</text>
+    </view>
+    <view class="report__footer-btn report__footer-btn--primary" bindtap="goPaipan">
+      <text>🔮 重新排盘</text>
+    </view>
+  </view>
+</view>

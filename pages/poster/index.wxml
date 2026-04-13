@@ -1,0 +1,33 @@
+<view class="poster">
+  <view class="poster__preview">
+    <canvas type="2d" id="posterCanvas" class="poster__canvas" />
+  </view>
+
+  <!-- 海报类型切换 -->
+  <view class="poster__types" wx:if="{{showTypes}}">
+    <view
+      class="poster__type-btn {{posterType === 'paipan' ? 'active' : ''}}"
+      bindtap="switchType"
+      data-type="paipan"
+    >排盘海报</view>
+    <view
+      class="poster__type-btn {{posterType === 'fortune' ? 'active' : ''}}"
+      bindtap="switchType"
+      data-type="fortune"
+    >好运签</view>
+    <view
+      class="poster__type-btn {{posterType === 'invite' ? 'active' : ''}}"
+      bindtap="switchType"
+      data-type="invite"
+    >邀请海报</view>
+  </view>
+
+  <view class="poster__actions">
+    <view class="poster__btn" bindtap="savePoster">
+      <text>💾 保存到相册</text>
+    </view>
+    <view class="poster__btn poster__btn--share">
+      <button class="poster__share-btn" open-type="share">📤 分享给好友</button>
+    </view>
+  </view>
+</view>

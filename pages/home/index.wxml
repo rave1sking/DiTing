@@ -1,48 +1,61 @@
-<nav nav-type="search" />
-<view class="home-container">
-  <view class="home-content">
-    <t-tabs defaultValue="recommend">
-      <t-tab-panel label="推荐" value="recommend">
-        <t-pull-down-refresh
-          value="{{enable}}"
-          bind:refresh="onRefresh"
-          loadingTexts="{{['下拉刷新', '松手刷新', '正在刷新', '刷新完成']}}"
-        >
-          <view class="home-card-list">
-            <t-swiper
-              list="{{swiperList}}"
-              navigation="{{ { type: 'dots-bar' } }}"
-              height="488rpx"
-              style="width: 340rpx"
-            />
-            <card
-              wx:for="{{cardInfo}}"
-              wx:key="index"
-              desc="{{item.desc}}"
-              url="{{item.url}}"
-              tags="{{item.tags}}"
-            />
-          </view>
-        </t-pull-down-refresh>
-      </t-tab-panel>
-      <t-tab-panel label="我的关注" value="follow">
-        <view class="home-card-list">
-          <card
-            wx:for="{{focusCardInfo}}"
-            wx:key="index"
-            desc="{{item.desc}}"
-            url="{{item.url}}"
-            tags="{{item.tags}}"
-          />
-        </view>
-      </t-tab-panel>
-    </t-tabs>
+<view class="home">
+  <!-- 虹彩装饰光球 -->
+  <view class="home__orb home__orb--1"></view>
+  <view class="home__orb home__orb--2"></view>
+  <view class="home__orb home__orb--3"></view>
+
+  <!-- 顶部标题 -->
+  <view class="home__header">
+    <view class="home__brand">
+      <text class="home__brand-name">听听</text>
+      <text class="home__brand-slogan">万物皆有灵，万事皆可听</text>
+    </view>
+  </view>
+
+  <!-- 谛听IP展示区 -->
+  <view class="home__ip-area">
+    <view class="home__glow-ring"></view>
+    <view class="home__diting-wrap {{isTyping ? 'listening' : ''}} {{isThinking ? 'thinking' : ''}}">
+      <image
+        class="home__diting-img"
+        src="/static/images/diting-avatar.svg"
+        mode="aspectFit"
+      />
+      <view class="home__horn-glow {{isThinking ? 'active' : ''}}"></view>
+      <view class="home__ear home__ear--left {{isTyping ? 'listening' : ''}}"></view>
+      <view class="home__ear home__ear--right {{isTyping ? 'listening' : ''}}"></view>
+    </view>
+    <view class="home__status-text">
+      <text wx:if="{{isThinking}}">谛听正在感应灵气...</text>
+      <text wx:elif="{{isTyping}}">谛听正在侧耳倾听...</text>
+      <text wx:else>{{statusText}}</text>
+    </view>
+  </view>
+
+  <!-- 听听一语卡片 -->
+  <view class="home__fortune-card" wx:if="{{todaySummary}}">
+    <view class="home__fortune-label">— 今日灵语 —</view>
+    <view class="home__fortune-text">{{todaySummary}}</view>
+  </view>
+
+  <!-- 功能入口 -->
+  <view class="home__actions">
+    <view class="home__action-btn home__action-btn--primary" bindtap="goPaipan">
+      <view class="home__action-icon">🔮</view>
+      <view class="home__action-info">
+        <text class="home__action-title">灵耳排盘</text>
+        <text class="home__action-desc">输入生辰，聆听命运之音</text>
+      </view>
+    </view>
+    <view class="home__action-row">
+      <view class="home__action-btn home__action-btn--small" bindtap="goEar">
+        <view class="home__action-icon">👂</view>
+        <text class="home__action-title">摸摸灵耳</text>
+      </view>
+      <view class="home__action-btn home__action-btn--small" bindtap="goHistory">
+        <view class="home__action-icon">📜</view>
+        <text class="home__action-title">历史报告</text>
+      </view>
+    </view>
   </view>
 </view>
-
-<view class="home-release">
-  <t-button theme="primary" size="large" icon="add" shape="round" bindtap="goRelease">
-    发布
-  </t-button>
-</view>
-<t-message id="t-message" />

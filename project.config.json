@@ -45,11 +45,16 @@
       "less"
     ],
     "condition": false,
-    "ignoreUploadUnusedFiles": true
+    "ignoreUploadUnusedFiles": true,
+    "compileWorklet": false,
+    "localPlugins": false,
+    "swc": false,
+    "disableSWC": true
   },
+  "cloudfunctionRoot": "cloudfunctions/",
   "compileType": "miniprogram",
-  "libVersion": "3.7.8",
-  "appid": "wx0ee80a2f23dbd157",
+  "libVersion": "3.15.1",
+  "appid": "wx19b21b02a6c7a508",
   "projectname": "miniprogram-starter",
   "condition": {
     "miniprogram": {
@@ -104,5 +109,6 @@
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
-  }
+  },
+  "simulatorPluginLibVersion": {}
 }

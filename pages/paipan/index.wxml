@@ -1,0 +1,103 @@
+<view class="paipan">
+  <view class="paipan__header">
+    <image class="paipan__header-img" src="/static/images/diting-avatar.svg" mode="aspectFit" />
+    <view class="paipan__header-text">
+      <text class="paipan__header-title">灵耳排盘</text>
+      <text class="paipan__header-desc">请告诉谛听你的生辰，聆听命运之音</text>
+    </view>
+  </view>
+
+  <view class="paipan__form">
+    <!-- 姓名输入 -->
+    <view class="paipan__field">
+      <text class="paipan__label">姓名</text>
+      <view class="paipan__input-row">
+        <input
+          class="paipan__input"
+          placeholder="请输入姓名（至少两个字）"
+          placeholder-class="paipan__input-placeholder"
+          value="{{name}}"
+          maxlength="6"
+          bindinput="onNameInput"
+        />
+      </view>
+    </view>
+
+    <!-- 性别选择 -->
+    <view class="paipan__field">
+      <text class="paipan__label">性别</text>
+      <view class="paipan__gender-group">
+        <view
+          class="paipan__gender-btn {{gender === 'male' ? 'active' : ''}}"
+          bindtap="selectGender"
+          data-gender="male"
+        >
+          <text>♂ 乾（男）</text>
+        </view>
+        <view
+          class="paipan__gender-btn {{gender === 'female' ? 'active' : ''}}"
+          bindtap="selectGender"
+          data-gender="female"
+        >
+          <text>♀ 坤（女）</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 出生日期 -->
+    <view class="paipan__field" bindtap="openDatePicker">
+      <text class="paipan__label">出生日期（阳历）</text>
+      <view class="paipan__value-row">
+        <text class="paipan__value {{birthDate ? '' : 'placeholder'}}">
+          {{birthDate || '请选择出生日期'}}
+        </text>
+        <text class="paipan__arrow">></text>
+      </view>
+    </view>
+
+    <!-- 出生时辰 -->
+    <view class="paipan__field" bindtap="openShichenPicker">
+      <text class="paipan__label">出生时辰</text>
+      <view class="paipan__value-row">
+        <text class="paipan__value {{shichenName ? '' : 'placeholder'}}">
+          {{shichenName || '请选择出生时辰'}}
+        </text>
+        <text class="paipan__arrow">></text>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="paipan__submit">
+      <view
+        class="paipan__submit-btn {{canSubmit ? '' : 'disabled'}}"
+        bindtap="onSubmit"
+      >
+        <text>开始排盘</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 日期选择器 -->
+  <t-date-time-picker
+    title="选择出生日期"
+    visible="{{showDatePicker}}"
+    mode="date"
+    value="{{dateValue}}"
+    format="YYYY-MM-DD"
+    start="1940-01-01"
+    end="{{today}}"
+    bindconfirm="onDateConfirm"
+    bindcancel="onDateCancel"
+  />
+
+  <!-- 时辰选择器 -->
+  <t-picker
+    visible="{{showShichenPicker}}"
+    value="{{[shichenIndex]}}"
+    title="选择出生时辰"
+    bindconfirm="onShichenConfirm"
+    bindcancel="onShichenCancel"
+  >
+    <t-picker-item options="{{shichenOptions}}" />
+  </t-picker>
+</view>

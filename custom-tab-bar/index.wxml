@@ -1,5 +1,35 @@
-<t-tab-bar value="{{ value }}" theme="tag" split="{{ false }}" bind:change="handleChange">
-  <t-tab-bar-item icon="home" value="home">首页</t-tab-bar-item>
-  <t-tab-bar-item icon="chat" value="message" badge-props="{{ { count: unreadNum } }}">消息</t-tab-bar-item>
-  <t-tab-bar-item icon="user" value="my">我的</t-tab-bar-item>
-</t-tab-bar>
+<view class="tab-bar">
+  <view class="tab-bar__bg"></view>
+  <view class="tab-bar__content">
+    <view
+      class="tab-bar__item {{value === 'home' ? 'active' : ''}}"
+      bindtap="handleChange"
+      data-value="home"
+    >
+      <view class="tab-bar__icon">
+        <text class="tab-bar__icon-text">🏠</text>
+      </view>
+      <text class="tab-bar__label">谛听</text>
+    </view>
+    <view
+      class="tab-bar__item tab-bar__item--center {{value === 'ear' ? 'active' : ''}}"
+      bindtap="handleChange"
+      data-value="ear"
+    >
+      <view class="tab-bar__center-btn">
+        <image src="/static/images/diting-avatar.svg" class="tab-bar__center-img" mode="aspectFit" />
+      </view>
+      <text class="tab-bar__label">灵耳</text>
+    </view>
+    <view
+      class="tab-bar__item {{value === 'my' ? 'active' : ''}}"
+      bindtap="handleChange"
+      data-value="my"
+    >
+      <view class="tab-bar__icon">
+        <text class="tab-bar__icon-text">👤</text>
+      </view>
+      <text class="tab-bar__label">我的</text>
+    </view>
+  </view>
+</view>

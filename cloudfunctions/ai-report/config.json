@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "openapi": []
+  },
+  "triggers": [],
+  "environment": {
+    "DEEPSEEK_API_KEY": ""
+  }
+}

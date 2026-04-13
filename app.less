@@ -1,9 +1,52 @@
-/**app.wxss**/
+@import '/variable.less';
+
 page {
-  background-color: #f3f3f3;
+  background: @bg-base;
+  color: @text-color-primary;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .page {
-  height: 100vh;
-  background-color: #fff;
+  min-height: 100vh;
+  background: @bg-page;
+  position: relative;
+  overflow: hidden;
+}
+
+// ====== 虹彩光球装饰（各页面复用） ======
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+
+  &--purple {
+    background: @orb-purple;
+  }
+  &--pink {
+    background: @orb-pink;
+  }
+  &--blue {
+    background: @orb-blue;
+  }
+}
+
+// ====== 毛玻璃卡片 ======
+.glass-card {
+  background: @glass-bg;
+  backdrop-filter: @glass-blur;
+  -webkit-backdrop-filter: @glass-blur;
+  border: 1rpx solid @glass-border;
+  border-radius: 32rpx;
+  box-shadow: @glass-shadow;
+}
+
+.glass-card-solid {
+  background: @glass-bg-heavy;
+  backdrop-filter: @glass-blur;
+  -webkit-backdrop-filter: @glass-blur;
+  border: 1rpx solid @glass-border;
+  border-radius: 32rpx;
+  box-shadow: @glass-shadow;
 }

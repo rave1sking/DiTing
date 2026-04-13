@@ -1,0 +1,44 @@
+<view class="history">
+  <view class="history__header">
+    <text class="history__title">历史报告</text>
+    <text class="history__count">共 {{reports.length}} 份</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="history__loading">
+    <text>加载中...</text>
+  </view>
+
+  <view wx:elif="{{reports.length === 0}}" class="history__empty">
+    <text class="history__empty-icon">📜</text>
+    <text class="history__empty-text">暂无排盘记录</text>
+    <view class="history__empty-btn" bindtap="goPaipan">去排盘</view>
+  </view>
+
+  <view wx:else class="history__list">
+    <view
+      class="history__item"
+      wx:for="{{reports}}"
+      wx:key="_id"
+      bindtap="goReport"
+      data-id="{{item._id}}"
+    >
+      <view class="history__item-left">
+        <view class="history__item-top">
+          <text class="history__item-bazi">{{item.baziRaw.baziString}}</text>
+          <text wx:if="{{item.birthInfo.name}}" class="history__item-name">{{item.birthInfo.name}}</text>
+        </view>
+        <view class="history__item-meta">
+          <text>{{item.birthInfo.solarDate}}</text>
+          <text class="history__item-dot">·</text>
+          <text>{{item.birthInfo.gender === 'male' ? '乾' : '坤'}}</text>
+          <text class="history__item-dot">·</text>
+          <text>{{item.birthInfo.shichenName}}</text>
+        </view>
+      </view>
+      <view class="history__item-right">
+        <text class="history__item-summary" wx:if="{{item.summary}}">{{item.summary}}</text>
+        <text class="history__item-arrow">></text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,4 +1,17 @@
 export default {
-  isMock: true,
-  baseUrl: '',
+  useMock: true, // 开发阶段使用本地Mock，开通云开发后改为 false
+  cloudEnv: 'diting-cloud',
+  deepseek: {
+    apiUrl: 'https://api.deepseek.com/v1/chat/completions',
+    model: 'deepseek-chat',
+  },
+  lingli: {
+    checkin: 5,
+    checkinStreak3: 10,
+    checkinStreak7: 20,
+    watchAd: 5,
+    inviteFriend: 20,
+    deepReport: 10,
+    askQuestion: 5,
+  },
 };

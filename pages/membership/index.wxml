@@ -1,0 +1,111 @@
+<view class="vip">
+  <!-- 会员状态头部 -->
+  <view class="vip__header">
+    <view class="vip__status" wx:if="{{isVip}}">
+      <text class="vip__crown">👑</text>
+      <text class="vip__status-text">听听守护者</text>
+      <text class="vip__expire">有效期至 {{memberExpiry}}</text>
+    </view>
+    <view class="vip__status" wx:else>
+      <text class="vip__crown">✨</text>
+      <text class="vip__status-text">成为听听守护者</text>
+      <text class="vip__expire">解锁全部高级功能</text>
+    </view>
+  </view>
+
+  <!-- 会员权益 -->
+  <view class="vip__benefits">
+    <view class="vip__benefit-title">守护者专属权益</view>
+    <view class="vip__benefit-list">
+      <view class="vip__benefit-item">
+        <text class="vip__benefit-icon">🔮</text>
+        <view class="vip__benefit-info">
+          <text class="vip__benefit-name">无限深度解析</text>
+          <text class="vip__benefit-desc">30天内不限次查看事业/财运/感情报告</text>
+        </view>
+      </view>
+      <view class="vip__benefit-item">
+        <text class="vip__benefit-icon">🎨</text>
+        <view class="vip__benefit-info">
+          <text class="vip__benefit-name">专属谛听皮肤</text>
+          <text class="vip__benefit-desc">解锁守护者专属的金色谛听形象</text>
+        </view>
+      </view>
+      <view class="vip__benefit-item">
+        <text class="vip__benefit-icon">💬</text>
+        <view class="vip__benefit-info">
+          <text class="vip__benefit-name">免费追加提问</text>
+          <text class="vip__benefit-desc">无需灵力值即可向谛听追问</text>
+        </view>
+      </view>
+      <view class="vip__benefit-item">
+        <text class="vip__benefit-icon">⚡</text>
+        <view class="vip__benefit-info">
+          <text class="vip__benefit-name">优先响应</text>
+          <text class="vip__benefit-desc">排盘与报告生成优先处理</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 购买选项 -->
+  <view class="vip__products">
+    <view class="vip__product-title">选择方案</view>
+
+    <!-- 会员月卡 -->
+    <view
+      class="vip__product-card vip__product-card--highlight {{selectedProduct === 'vip_monthly' ? 'selected' : ''}}"
+      bindtap="selectProduct"
+      data-id="vip_monthly"
+    >
+      <view class="vip__product-badge">推荐</view>
+      <view class="vip__product-name">听听守护者月卡</view>
+      <view class="vip__product-price">
+        <text class="vip__price-symbol">¥</text>
+        <text class="vip__price-amount">29.9</text>
+        <text class="vip__price-unit">/月</text>
+      </view>
+      <view class="vip__product-desc">无限深度报告 + 专属皮肤</view>
+    </view>
+
+    <!-- 灵力值充值 -->
+    <view class="vip__product-row">
+      <view
+        class="vip__product-card {{selectedProduct === 'lingli_small' ? 'selected' : ''}}"
+        bindtap="selectProduct"
+        data-id="lingli_small"
+      >
+        <view class="vip__product-name">灵力小礼包</view>
+        <view class="vip__product-price">
+          <text class="vip__price-symbol">¥</text>
+          <text class="vip__price-amount">1.9</text>
+        </view>
+        <view class="vip__product-desc">50灵力值</view>
+      </view>
+
+      <view
+        class="vip__product-card {{selectedProduct === 'lingli_large' ? 'selected' : ''}}"
+        bindtap="selectProduct"
+        data-id="lingli_large"
+      >
+        <view class="vip__product-tag">超值</view>
+        <view class="vip__product-name">灵力大礼包</view>
+        <view class="vip__product-price">
+          <text class="vip__price-symbol">¥</text>
+          <text class="vip__price-amount">9.9</text>
+        </view>
+        <view class="vip__product-desc">300灵力值</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 购买按钮 -->
+  <view class="vip__action">
+    <view
+      class="vip__buy-btn {{selectedProduct ? '' : 'disabled'}}"
+      bindtap="onBuy"
+    >
+      {{selectedProduct === 'vip_monthly' ? '开通守护者月卡' : '立即购买'}}
+    </view>
+  </view>
+</view>

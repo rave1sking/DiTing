@@ -1,0 +1,286 @@
+/**
+ * 云服务统一封装层
+ * useMock=true 时使用本地 Storage 模拟，无需开通云开发
+ * useMock=false 时透传到真实云开发
+ */
+import config from '../config';
+
+let _db = null;
+
+function getDb() {
+  if (config.useMock) return null;
+  if (!_db) _db = wx.cloud.database();
+  return _db;
+}
+
+// ======================== Mock 数据层 ========================
+
+function mockGetUser() {
+  const user = wx.getStorageSync('mock_user') || {
+    _id: 'mock_openid_001',
+    nickName: '',
+    avatarUrl: '',
+    lingliBalance: 30,
+    memberType: 'normal',
+    memberExpiry: null,
+    consecutiveCheckIns: 0,
+    lastCheckInDate: '',
+    inviterId: '',
+  };
+  wx.setStorageSync('mock_user', user);
+  return user;
+}
+
+function mockSaveUser(user) {
+  wx.setStorageSync('mock_user', user);
+}
+
+function mockGetReports() {
+  return wx.getStorageSync('mock_reports') || [];
+}
+
+function mockSaveReports(reports) {
+  wx.setStorageSync('mock_reports', reports);
+}
+
+function mockGetTransactions() {
+  return wx.getStorageSync('mock_transactions') || [];
+}
+
+function mockSaveTransactions(txns) {
+  wx.setStorageSync('mock_transactions', txns);
+}
+
+function mockGetCheckins() {
+  return wx.getStorageSync('mock_checkins') || [];
+}
+
+function mockSaveCheckins(checkins) {
+  wx.setStorageSync('mock_checkins', checkins);
+}
+
+function generateId() {
+  return `mock_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+// ======================== 公开 API ========================
+
+export async function login() {
+  if (config.useMock) {
+    const user = mockGetUser();
+    return { openid: user._id, userInfo: user, isNew: false };
+  }
+  const { result } = await wx.cloud.callFunction({ name: 'login' });
+  return result;
+}
+
+export async function updateProfile(userInfo) {
+  if (config.useMock) {
+    const user = mockGetUser();
+    if (userInfo.nickName) user.nickName = userInfo.nickName;
+    if (userInfo.avatarUrl) user.avatarUrl = userInfo.avatarUrl;
+    mockSaveUser(user);
+    return { success: true };
+  }
+  const { result } = await wx.cloud.callFunction({
+    name: 'login',
+    data: { action: 'updateProfile', userInfo },
+  });
+  return result;
+}
+
+export async function addReport(reportData) {
+  if (config.useMock) {
+    const id = generateId();
+    const reports = mockGetReports();
+    const record = { ...reportData, _id: id, createdAt: new Date().toISOString() };
+    reports.unshift(record);
+    mockSaveReports(reports);
+    return id;
+  }
+  const db = getDb();
+  const { _id } = await db.collection('reports').add({ data: { ...reportData, createdAt: db.serverDate() } });
+  return _id;
+}
+
+export async function getReport(reportId) {
+  if (config.useMock) {
+    const reports = mockGetReports();
+    return reports.find((r) => r._id === reportId) || null;
+  }
+  const db = getDb();
+  const { data } = await db.collection('reports').doc(reportId).get();
+  return data;
+}
+
+export async function updateReport(reportId, updateData) {
+  if (config.useMock) {
+    const reports = mockGetReports();
+    const idx = reports.findIndex((r) => r._id === reportId);
+    if (idx >= 0) {
+      reports[idx] = { ...reports[idx], ...updateData };
+      mockSaveReports(reports);
+    }
+    return { success: true };
+  }
+  const db = getDb();
+  await db.collection('reports').doc(reportId).update({ data: updateData });
+  return { success: true };
+}
+
+export async function getReportList(userId) {
+  if (config.useMock) {
+    const reports = mockGetReports();
+    return reports.filter((r) => r.userId === userId || config.useMock);
+  }
+  const db = getDb();
+  const { data } = await db.collection('reports')
+    .where({ userId })
+    .orderBy('createdAt', 'desc')
+    .limit(50)
+    .get();
+  return data;
+}
+
+export async function checkin(date) {
+  if (config.useMock) {
+    const user = mockGetUser();
+    const checkins = mockGetCheckins();
+
+    if (checkins.find((c) => c.date === date)) {
+      return { success: false, error: '今日已打卡' };
+    }
+
+    const yesterday = getYesterday(date);
+    let consecutive = user.lastCheckInDate === yesterday ? (user.consecutiveCheckIns || 0) + 1 : 1;
+
+    const FORTUNE_POOL = [
+      '今日宜放松心情，好运自然来敲门',
+      '心怀善意，世界便会温柔以待',
+      '保持微笑，你的能量场正在吸引美好',
+      '深呼吸，你比想象中更强大',
+      '今日灵感充沛，适合创造与表达',
+      '你的温柔，是世界最珍贵的力量',
+      '今天会有一个意想不到的小惊喜',
+      '相信直觉，它正在引导你走向正确的方向',
+      '慢一点也没关系，每一步都算数',
+      '今天的你，闪闪发光',
+    ];
+
+    const fortuneIdx = hashStr(date) % FORTUNE_POOL.length;
+    let earnedLingli = config.lingli.checkin;
+    if (consecutive === 3) earnedLingli += config.lingli.checkinStreak3;
+    if (consecutive === 7) earnedLingli += config.lingli.checkinStreak7;
+
+    user.lastCheckInDate = date;
+    user.consecutiveCheckIns = consecutive;
+    user.lingliBalance = (user.lingliBalance || 0) + earnedLingli;
+    mockSaveUser(user);
+
+    checkins.push({ _id: generateId(), date, fortuneText: FORTUNE_POOL[fortuneIdx] });
+    mockSaveCheckins(checkins);
+
+    const txns = mockGetTransactions();
+    txns.unshift({ _id: generateId(), type: 'earn', amount: earnedLingli, source: 'checkin', createdAt: new Date().toISOString() });
+    mockSaveTransactions(txns);
+
+    return {
+      success: true,
+      fortuneText: FORTUNE_POOL[fortuneIdx],
+      earnedLingli,
+      consecutiveCheckIns: consecutive,
+    };
+  }
+  const { result } = await wx.cloud.callFunction({ name: 'checkin', data: { date } });
+  return result;
+}
+
+export async function getLingliBalance() {
+  if (config.useMock) {
+    const user = mockGetUser();
+    return { success: true, balance: user.lingliBalance || 0 };
+  }
+  const { result } = await wx.cloud.callFunction({ name: 'lingli', data: { action: 'getBalance' } });
+  return result;
+}
+
+export async function spendLingli(amount, source, refId) {
+  if (config.useMock) {
+    const user = mockGetUser();
+    if ((user.lingliBalance || 0) < amount) return { success: false, error: '灵力不足' };
+    user.lingliBalance -= amount;
+    mockSaveUser(user);
+    const txns = mockGetTransactions();
+    txns.unshift({ _id: generateId(), type: 'spend', amount, source, refId, createdAt: new Date().toISOString() });
+    mockSaveTransactions(txns);
+    return { success: true, balance: user.lingliBalance };
+  }
+  const { result } = await wx.cloud.callFunction({ name: 'lingli', data: { action: 'spend', amount, source, refId } });
+  return result;
+}
+
+export async function earnLingli(amount, source) {
+  if (config.useMock) {
+    const user = mockGetUser();
+    user.lingliBalance = (user.lingliBalance || 0) + amount;
+    mockSaveUser(user);
+    const txns = mockGetTransactions();
+    txns.unshift({ _id: generateId(), type: 'earn', amount, source, createdAt: new Date().toISOString() });
+    mockSaveTransactions(txns);
+    return { success: true, balance: user.lingliBalance };
+  }
+  const { result } = await wx.cloud.callFunction({ name: 'lingli', data: { action: 'earn', amount, source } });
+  return result;
+}
+
+export async function getLingliHistory(page) {
+  if (config.useMock) {
+    const txns = mockGetTransactions();
+    const pageSize = 20;
+    const start = page * pageSize;
+    const slice = txns.slice(start, start + pageSize);
+    return { success: true, data: slice, hasMore: start + pageSize < txns.length };
+  }
+  const { result } = await wx.cloud.callFunction({ name: 'lingli', data: { action: 'getHistory', page } });
+  return result;
+}
+
+export async function generateAIReport(reportId, type) {
+  if (config.useMock) {
+    // Mock AI 生成结果
+    const mockResults = {
+      summary: '林间初雪，待时而发',
+      energy: { energy: { '金': 65, '木': 45, '水': 70, '火': 30, '土': 55 }, interpretation: '今日水气充盈，灵感与智慧并行' },
+      deep: {
+        career: { score: 78, analysis: '当前事业运势平稳上升，适合主动争取新机会。你的沟通能力正处于高峰期，善用这一优势。', advice: ['主动与上级沟通想法，展现自己的能力', '本周适合启动新项目或学习新技能', '注意劳逸结合，避免过度消耗精力'] },
+        wealth: { score: 65, analysis: '财运趋于稳定，偏财运有小幅波动。适合做好规划，稳中求进。', advice: ['控制非必要支出，建立储蓄习惯', '关注身边的小机会，可能带来意外收获', '避免冲动投资，多做功课再决策'] },
+        love: { score: 82, analysis: '感情能量充沛，桃花运正旺。无论单身还是有伴，都是增进感情的好时期。', advice: ['多参加社交活动，扩大交友圈', '对伴侣多一些耐心和理解', '表达真实感受，不要压抑情绪'] },
+      },
+    };
+
+    const data = type === 'summary' ? { summary: mockResults.summary }
+      : type === 'energy' ? { energyData: mockResults.energy }
+      : { deepReport: mockResults.deep };
+
+    await updateReport(reportId, data);
+    return { success: true, data, type };
+  }
+  const { result } = await wx.cloud.callFunction({ name: 'ai-report', data: { reportId, type } });
+  return result;
+}
+
+// ======================== 辅助函数 ========================
+
+function getYesterday(dateStr) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+function hashStr(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}

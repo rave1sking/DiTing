@@ -1,21 +1,19 @@
-<t-navbar title="设置" left-arrow />
 <view class="setting">
-  <t-cell-group wx:for="{{menuData}}" wx:for-item="item" wx:key="index" t-class="cell-group-class" theme="card">
-    <t-cell
+  <view class="setting__group" wx:for="{{menuData}}" wx:key="index">
+    <view
+      class="setting__item"
       wx:for="{{item}}"
-      wx:for-item="carditem"
-      wx:key="cardkey"
-      title="{{carditem.title}}"
-      hover
-      arrow
-      left-icon="app"
-      url="{{carditem.url}}"
-      bordered="true"
-      leftIcon="{{carditem.icon}}"
-      data-data="{{carditem}}"
-      bindclick="onEleClick"
-    />
-  </t-cell-group>
-</view>
+      wx:for-item="menuItem"
+      wx:key="title"
+      data-data="{{menuItem}}"
+      bindtap="onEleClick"
+    >
+      <text class="setting__item-title">{{menuItem.title}}</text>
+      <text class="setting__item-arrow">></text>
+    </view>
+  </view>
 
-<t-toast id="t-toast" />
+  <view class="setting__logout" bindtap="onLogout">
+    <text>退出登录</text>
+  </view>
+</view>

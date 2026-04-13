@@ -1,39 +1,310 @@
 @import '/variable.less';
 
-@home-tab-item-height: 96rpx;
+.home {
+  min-height: 100vh;
+  background: @bg-page;
+  padding-bottom: calc(@tab-bar-height + 40rpx);
+  position: relative;
+  overflow: hidden;
 
-.home-container {
-  height: calc(100vh - @tab-bar-height);
+  // ====== 虹彩装饰光球 ======
+  &__orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
 
-  .home-content {
-    height: calc(100% - @nav-bar-height);
-  }
-
-  .t-tabs {
-    --td-tab-item-tag-height: @home-tab-item-height;
-    --td-tab-font-size: @font-size-small;
-    width: 100%;
-    height: 100%;
-
-    &__content {
-      height: calc(100% - @home-tab-item-height);
-      overflow: auto;
-      background-color: @bg-color;
+    &--1 {
+      width: 400rpx;
+      height: 400rpx;
+      top: -80rpx;
+      right: -100rpx;
+      background: @orb-purple;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    &--2 {
+      width: 300rpx;
+      height: 300rpx;
+      top: 500rpx;
+      left: -80rpx;
+      background: @orb-pink;
+      animation: orbFloat 10s ease-in-out infinite reverse;
+    }
+    &--3 {
+      width: 250rpx;
+      height: 250rpx;
+      bottom: 300rpx;
+      right: -40rpx;
+      background: @orb-blue;
+      animation: orbFloat 12s ease-in-out infinite 2s;
     }
   }
 
-  .home-card-list {
+  // ====== 顶部 ======
+  &__header {
+    position: relative;
+    z-index: 1;
+    padding: 32rpx 48rpx 0;
+  }
+
+  &__brand {
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 24rpx 12rpx;
-    padding: 24rpx;
-    background-color: @bg-color;
+    flex-direction: column;
+  }
+
+  &__brand-name {
+    font-size: 52rpx;
+    font-weight: 800;
+    color: @text-color-primary;
+    letter-spacing: 6rpx;
+  }
+
+  &__brand-slogan {
+    font-size: 24rpx;
+    color: @text-color-hint;
+    margin-top: 8rpx;
+    letter-spacing: 2rpx;
+  }
+
+  // ====== 谛听IP区域 ======
+  &__ip-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60rpx 0 32rpx;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__glow-ring {
+    position: absolute;
+    top: 40rpx;
+    width: 420rpx;
+    height: 420rpx;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.2) 0%, rgba(196, 181, 253, 0.08) 40%, transparent 70%);
+    animation: glowPulse 4s ease-in-out infinite;
+  }
+
+  &__diting-wrap {
+    position: relative;
+    width: 320rpx;
+    height: 320rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: breathe 4s ease-in-out infinite;
+    z-index: 1;
+  }
+
+  &__diting-img {
+    width: 240rpx;
+    height: 240rpx;
+    filter: drop-shadow(0 16rpx 32rpx rgba(139, 92, 246, 0.18));
+  }
+
+  &__horn-glow {
+    position: absolute;
+    top: 10rpx;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40rpx;
+    height: 40rpx;
+    border-radius: 50%;
+    background: transparent;
+    transition: all 0.3s;
+
+    &.active {
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.7) 0%, rgba(167, 139, 250, 0.3) 50%, transparent 70%);
+      box-shadow: 0 0 30rpx rgba(251, 191, 36, 0.5), 0 0 60rpx rgba(167, 139, 250, 0.2);
+      animation: hornGlow 2s ease-in-out infinite;
+    }
+  }
+
+  &__ear {
+    position: absolute;
+    width: 30rpx;
+    height: 50rpx;
+    border-radius: 50%;
+    top: 60rpx;
+
+    &--left {
+      left: 60rpx;
+      transform-origin: bottom center;
+      animation: earIdleLeft 6s ease-in-out infinite;
+    }
+    &--right {
+      right: 60rpx;
+      transform-origin: bottom center;
+      animation: earIdleRight 6s ease-in-out infinite;
+    }
+    &.listening {
+      animation: earListen 0.6s ease-in-out infinite !important;
+    }
+  }
+
+  &__status-text {
+    margin-top: 24rpx;
+    font-size: 26rpx;
+    color: @text-color-secondary;
+    letter-spacing: 2rpx;
+    animation: fadeInOut 5s ease-in-out infinite;
+    z-index: 1;
+  }
+
+  // ====== 听听一语卡片 ======
+  &__fortune-card {
+    position: relative;
+    z-index: 1;
+    margin: 0 40rpx 32rpx;
+    padding: 36rpx 32rpx;
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid rgba(167, 139, 250, 0.2);
+    border-radius: 28rpx;
+    text-align: center;
+    box-shadow: 0 8rpx 32rpx rgba(139, 92, 246, 0.08);
+  }
+
+  &__fortune-label {
+    font-size: 22rpx;
+    color: @brand-color;
+    margin-bottom: 16rpx;
+    letter-spacing: 4rpx;
+    opacity: 0.7;
+  }
+
+  &__fortune-text {
+    font-size: 32rpx;
+    color: @text-color-primary;
+    font-weight: 600;
+    line-height: 48rpx;
+    letter-spacing: 2rpx;
+  }
+
+  // ====== 功能入口 ======
+  &__actions {
+    position: relative;
+    z-index: 1;
+    padding: 0 40rpx;
+  }
+
+  &__action-btn {
+    display: flex;
+    align-items: center;
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid @glass-border;
+    border-radius: 28rpx;
+    overflow: hidden;
+    transition: all 0.2s;
+    box-shadow: @glass-shadow;
+
+    &:active {
+      transform: scale(0.97);
+      box-shadow: 0 4rpx 16rpx rgba(139, 92, 246, 0.12);
+    }
+
+    &--primary {
+      padding: 36rpx 32rpx;
+      margin-bottom: 20rpx;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(196, 181, 253, 0.08) 100%);
+      border: 1rpx solid rgba(139, 92, 246, 0.18);
+    }
+
+    &--small {
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32rpx 24rpx;
+      gap: 12rpx;
+    }
+  }
+
+  &__action-row {
+    display: flex;
+    gap: 20rpx;
+  }
+
+  &__action-icon {
+    font-size: 52rpx;
+    margin-right: 24rpx;
+    flex-shrink: 0;
+
+    .home__action-btn--small & {
+      margin-right: 0;
+      font-size: 44rpx;
+    }
+  }
+
+  &__action-info {
+    flex: 1;
+  }
+
+  &__action-title {
+    font-size: 30rpx;
+    color: @text-color-primary;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6rpx;
+
+    .home__action-btn--small & {
+      font-size: 26rpx;
+      margin-bottom: 0;
+    }
+  }
+
+  &__action-desc {
+    font-size: 24rpx;
+    color: @text-color-secondary;
+    display: block;
   }
 }
 
-.home-release {
-  position: fixed;
-  bottom: 208rpx;
-  right: 32rpx;
+// ====== 动画 ======
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(15rpx, -20rpx) scale(1.05); }
+  66% { transform: translate(-10rpx, 10rpx) scale(0.95); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes hornGlow {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.3); }
+}
+
+@keyframes earIdleLeft {
+  0%, 85%, 100% { transform: rotate(0deg); }
+  90% { transform: rotate(-8deg); }
+  95% { transform: rotate(3deg); }
+}
+
+@keyframes earIdleRight {
+  0%, 80%, 100% { transform: rotate(0deg); }
+  85% { transform: rotate(8deg); }
+  92% { transform: rotate(-3deg); }
+}
+
+@keyframes earListen {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-12deg); }
+  75% { transform: rotate(12deg); }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }

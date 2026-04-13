@@ -1,0 +1,155 @@
+@import '/variable.less';
+
+.paipan {
+  min-height: 100vh;
+  background: @bg-page;
+  padding: 0 40rpx;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: -40rpx;
+    right: -60rpx;
+    width: 300rpx;
+    height: 300rpx;
+    border-radius: 50%;
+    background: @orb-purple;
+    pointer-events: none;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    padding: 40rpx 0 48rpx;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__header-img {
+    width: 100rpx;
+    height: 100rpx;
+    margin-right: 24rpx;
+    filter: drop-shadow(0 8rpx 16rpx rgba(139, 92, 246, 0.15));
+  }
+
+  &__header-text { flex: 1; }
+
+  &__header-title {
+    font-size: 36rpx;
+    font-weight: 700;
+    color: @text-color-primary;
+    display: block;
+    margin-bottom: 8rpx;
+  }
+
+  &__header-desc {
+    font-size: 24rpx;
+    color: @text-color-secondary;
+    display: block;
+  }
+
+  &__form {
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid @glass-border;
+    border-radius: 28rpx;
+    padding: 8rpx 32rpx;
+    box-shadow: @glass-shadow;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__field {
+    padding: 32rpx 0;
+    border-bottom: 1rpx solid rgba(30, 27, 75, 0.05);
+    &:last-child { border-bottom: none; }
+  }
+
+  &__label {
+    display: block;
+    font-size: 26rpx;
+    color: @text-color-secondary;
+    margin-bottom: 20rpx;
+  }
+
+  &__input-row {
+    display: flex;
+    align-items: center;
+  }
+
+  &__input {
+    flex: 1;
+    font-size: 30rpx;
+    color: @text-color-primary;
+    padding: 16rpx 20rpx;
+    border-radius: 16rpx;
+    border: 1rpx solid rgba(139, 92, 246, 0.12);
+    background: rgba(255, 255, 255, 0.5);
+    transition: border-color 0.2s;
+
+    &:focus { border-color: @brand-color; }
+  }
+
+  &__input-placeholder {
+    color: @text-color-hint;
+    font-size: 28rpx;
+  }
+
+  &__gender-group { display: flex; gap: 24rpx; }
+
+  &__gender-btn {
+    flex: 1;
+    text-align: center;
+    padding: 24rpx;
+    border-radius: 16rpx;
+    border: 1rpx solid rgba(139, 92, 246, 0.12);
+    background: rgba(255, 255, 255, 0.5);
+    color: @text-color-secondary;
+    font-size: 28rpx;
+    transition: all 0.2s;
+
+    &.active {
+      border-color: @brand-color;
+      background: @brand-color-pale;
+      color: @brand-color-deep;
+      box-shadow: 0 0 16rpx @brand-color-glow;
+    }
+
+    &:active { transform: scale(0.97); }
+  }
+
+  &__value-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__value {
+    font-size: 30rpx;
+    color: @text-color-primary;
+    &.placeholder { color: @text-color-hint; }
+  }
+
+  &__arrow { font-size: 28rpx; color: @text-color-hint; }
+
+  &__submit { padding: 48rpx 0 16rpx; position: relative; z-index: 1; }
+
+  &__submit-btn {
+    text-align: center;
+    padding: 28rpx;
+    border-radius: 48rpx;
+    background: linear-gradient(135deg, @brand-color 0%, #A78BFA 100%);
+    color: #fff;
+    font-size: 32rpx;
+    font-weight: 600;
+    letter-spacing: 4rpx;
+    box-shadow: 0 8rpx 32rpx @brand-color-glow;
+    transition: all 0.2s;
+
+    &:active { transform: scale(0.97); }
+    &.disabled { opacity: 0.4; box-shadow: none; }
+  }
+}

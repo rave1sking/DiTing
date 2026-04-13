@@ -1,0 +1,77 @@
+@import '/variable.less';
+
+.poster {
+  min-height: 100vh;
+  background: @bg-page;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 32rpx 48rpx;
+
+  &__preview {
+    width: 600rpx;
+    height: 900rpx;
+    border-radius: 28rpx;
+    overflow: hidden;
+    box-shadow: 0 16rpx 48rpx rgba(139, 92, 246, 0.12);
+  }
+
+  &__canvas { width: 600rpx; height: 900rpx; }
+
+  &__types { display: flex; gap: 16rpx; margin-top: 32rpx; }
+
+  &__type-btn {
+    padding: 16rpx 28rpx;
+    border-radius: 32rpx;
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid @glass-border;
+    font-size: 24rpx;
+    color: @text-color-secondary;
+    transition: all 0.2s;
+
+    &.active {
+      background: linear-gradient(135deg, @brand-color, #A78BFA);
+      border-color: @brand-color;
+      color: #fff;
+    }
+
+    &:active { transform: scale(0.95); }
+  }
+
+  &__actions { display: flex; gap: 24rpx; margin-top: 40rpx; width: 100%; }
+
+  &__btn {
+    flex: 1;
+    text-align: center;
+    padding: 24rpx;
+    border-radius: 40rpx;
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid @glass-border;
+    font-size: 28rpx;
+    color: @text-color-primary;
+    box-shadow: @glass-shadow;
+
+    &:active { background: @brand-color-pale; }
+
+    &--share {
+      background: linear-gradient(135deg, @brand-color, #A78BFA);
+      border: none;
+      color: #fff;
+    }
+  }
+
+  &__share-btn {
+    background: transparent !important;
+    color: #fff !important;
+    font-size: 28rpx !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: inherit !important;
+    border: none !important;
+    &::after { display: none; }
+  }
+}

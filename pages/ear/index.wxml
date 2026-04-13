@@ -1,0 +1,69 @@
+<view class="ear">
+  <!-- 顶部信息 -->
+  <view class="ear__header">
+    <text class="ear__title">摸摸灵耳</text>
+    <view class="ear__streak" wx:if="{{consecutiveCheckIns > 0}}">
+      <text>🔥 已连续 {{consecutiveCheckIns}} 天</text>
+    </view>
+  </view>
+
+  <!-- 耳朵区域 -->
+  <view class="ear__main">
+    <view class="ear__glow {{hasCheckedIn ? 'checked' : ''}}"></view>
+    <view
+      class="ear__touch-area {{animating ? 'bouncing' : ''}}"
+      bindtap="onTouchEar"
+    >
+      <image
+        class="ear__img"
+        src="/static/images/diting-avatar.svg"
+        mode="aspectFit"
+      />
+      <view class="ear__sparkles" wx:if="{{animating}}">
+        <view class="ear__sparkle" wx:for="{{sparkles}}" wx:key="index"
+          style="left:{{item.x}}%;top:{{item.y}}%;animation-delay:{{item.delay}}s">✨</view>
+      </view>
+    </view>
+    <text class="ear__hint" wx:if="{{!hasCheckedIn}}">轻触谛听的灵耳，接收今日好运</text>
+    <text class="ear__hint ear__hint--done" wx:else>今日已打卡，明天再来哦~</text>
+  </view>
+
+  <!-- 好运签卡片 -->
+  <view class="ear__card-wrap {{showCard ? 'show' : ''}}">
+    <view class="ear__card">
+      <view class="ear__card-decoration">
+        <view class="ear__card-line"></view>
+        <text class="ear__card-badge">今日好运签</text>
+        <view class="ear__card-line"></view>
+      </view>
+      <view class="ear__card-text">{{fortuneText}}</view>
+      <view class="ear__card-footer">
+        <text class="ear__card-date">{{todayDate}}</text>
+        <text class="ear__card-lingli" wx:if="{{earnedLingli}}">+{{earnedLingli}} 灵力</text>
+      </view>
+      <view class="ear__card-actions">
+        <view class="ear__card-btn" bindtap="shareFortune">
+          <text>📤 分享好运</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 打卡进度 -->
+  <view class="ear__progress">
+    <view class="ear__progress-title">连续打卡奖励</view>
+    <view class="ear__progress-bar">
+      <view class="ear__progress-fill" style="width: {{progressPercent}}%"></view>
+      <view class="ear__progress-nodes">
+        <view class="ear__progress-node {{consecutiveCheckIns >= 3 ? 'reached' : ''}}" style="left: {{3/7*100}}%">
+          <text class="ear__node-label">3天</text>
+          <text class="ear__node-reward">+10灵力</text>
+        </view>
+        <view class="ear__progress-node {{consecutiveCheckIns >= 7 ? 'reached' : ''}}" style="left: 100%">
+          <text class="ear__node-label">7天</text>
+          <text class="ear__node-reward">+20灵力</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

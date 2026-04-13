@@ -1,6 +1,6 @@
-/** 是否使用mock代替api返回 */
-export const config = {
+const config = {
   useMock: true,
+  cloudEnv: 'diting-cloud',
 };
 
-export default { config };
+export default config;

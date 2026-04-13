@@ -1,75 +1,68 @@
-<t-toast id="t-toast" />
-
-<view class="my">
-  <image class="nav-bg" src="/static/bg_navbar.png" />
-  <nav title-text="我的" />
-  <view class="my-info">
-    <t-cell-group>
-      <t-cell wx:if="{{isLoad}}" bordered="{{false}}">
-        <t-avatar image="{{personalInfo.image}}" slot="left-icon" size="large" />
-        <view class="my-info__person" slot="description">
-          <view class="name">{{personalInfo.name}}</view>
-          <view class="tags">
-            <t-tag class="tag" variant="light" icon="discount">{{personalInfo.star}}</t-tag>
-            <t-tag class="tag" variant="light" icon="location">{{personalInfo.city}}</t-tag>
-          </view>
-        </view>
-        <t-icon slot="right-icon" name="edit" size="40rpx" color="#000000e6" bindtap="onNavigateTo" />
-      </t-cell>
-      <t-cell
-        wx:if="{{!isLoad}}"
-        title="请先登录/注册"
-        bordered="{{false}}"
-        t-class-title="cell-class-title"
-        t-class-center="cell-class-center"
-        bindtap="onLogin"
-      >
-        <t-avatar slot="left-icon" icon="user" size="128rpx" />
-      </t-cell>
-    </t-cell-group>
-    <t-divider t-class="divider-class" />
-    <t-grid t-class="grid-class">
-      <t-grid-item
-        wx:for="{{gridList}}"
-        wx:for-item="gridItem"
-        wx:key="type"
-        text="{{gridItem.name}}"
-        icon="{{gridItem.icon}}"
-        class="grid-item {{gridItem.type === 'all' ? 'split-line' : ''}}"
-        data-data="{{gridItem}}"
-        bindclick="onEleClick"
+<view class="my-page">
+  <!-- 头部信息 -->
+  <view class="my-page__header">
+    <view class="my-page__avatar-wrap" bindtap="onLogin">
+      <image
+        wx:if="{{userInfo.avatarUrl}}"
+        class="my-page__avatar"
+        src="{{userInfo.avatarUrl}}"
+        mode="aspectFill"
       />
-    </t-grid>
+      <view wx:else class="my-page__avatar-default">
+        <image src="/static/images/diting-avatar.svg" mode="aspectFit" class="my-page__avatar-icon" />
+      </view>
+    </view>
+    <view class="my-page__user-info">
+      <text class="my-page__nickname" bindtap="onLogin">
+        {{userInfo.nickName || '点击登录'}}
+      </text>
+      <view class="my-page__lingli" bindtap="goLingli">
+        <text class="my-page__lingli-label">灵力值</text>
+        <text class="my-page__lingli-value">{{lingliBalance}}</text>
+        <text class="my-page__lingli-arrow">></text>
+      </view>
+    </view>
   </view>
 
-  <view class="my-service">
-    <view class="my-service--tips">推荐服务</view>
-    <t-grid column="{{4}}" class="my-service__list">
-      <t-grid-item
-        class="my-service__list-item"
-        wx:for="{{service}}"
-        wx:key="item"
-        text="{{item.name}}"
-        image="{{item.image}}"
-        url="{{item.url}}"
-        data-data="{{item}}"
-        bindclick="onEleClick"
-      />
-    </t-grid>
+  <!-- 功能入口 -->
+  <view class="my-page__grid">
+    <view class="my-page__grid-item" bindtap="goHistory">
+      <text class="my-page__grid-icon">📜</text>
+      <text class="my-page__grid-label">历史报告</text>
+    </view>
+    <view class="my-page__grid-item" bindtap="goMembership">
+      <text class="my-page__grid-icon">👑</text>
+      <text class="my-page__grid-label">听听守护者</text>
+    </view>
+    <view class="my-page__grid-item" bindtap="goLingli">
+      <text class="my-page__grid-icon">✨</text>
+      <text class="my-page__grid-label">灵力值</text>
+    </view>
+    <view class="my-page__grid-item" bindtap="onShare">
+      <text class="my-page__grid-icon">🎁</text>
+      <text class="my-page__grid-label">邀请好友</text>
+    </view>
   </view>
 
-  <t-cell-group theme="card">
-    <t-cell
-      wx:for="{{settingList}}"
-      wx:for-item="item"
-      wx:key="type"
-      title="{{item.name}}"
-      url="{{item.url}}"
-      leftIcon="{{item.icon}}"
-      hover
-      arrow
-      data-data="{{item}}"
-      bindclick="onEleClick"
-    />
-  </t-cell-group>
+  <!-- 菜单列表 -->
+  <view class="my-page__menu">
+    <view class="my-page__menu-item" bindtap="goHistory">
+      <text class="my-page__menu-text">我的报告</text>
+      <text class="my-page__menu-arrow">></text>
+    </view>
+    <view class="my-page__menu-item" bindtap="goMembership">
+      <text class="my-page__menu-text">会员中心</text>
+      <text class="my-page__menu-arrow">></text>
+    </view>
+    <view class="my-page__menu-item" bindtap="goSetting">
+      <text class="my-page__menu-text">设置</text>
+      <text class="my-page__menu-arrow">></text>
+    </view>
+    <view class="my-page__menu-item">
+      <t-button size="small" variant="text" open-type="contact" class="my-page__menu-contact">
+        联系客服
+      </t-button>
+      <text class="my-page__menu-arrow">></text>
+    </view>
+  </view>
 </view>

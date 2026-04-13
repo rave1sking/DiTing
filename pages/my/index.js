@@ -1,87 +1,61 @@
-import request from '~/api/request';
-import useToastBehavior from '~/behaviors/useToast';
+const app = getApp();
 
 Page({
-  behaviors: [useToastBehavior],
-
   data: {
-    isLoad: false,
-    service: [],
-    personalInfo: {},
-    gridList: [
-      {
-        name: '全部发布',
-        icon: 'root-list',
-        type: 'all',
-        url: '',
-      },
-      {
-        name: '审核中',
-        icon: 'search',
-        type: 'progress',
-        url: '',
-      },
-      {
-        name: '已发布',
-        icon: 'upload',
-        type: 'published',
-        url: '',
-      },
-      {
-        name: '草稿箱',
-        icon: 'file-copy',
-        type: 'draft',
-        url: '',
-      },
-    ],
-
-    settingList: [
-      { name: '联系客服', icon: 'service', type: 'service' },
-      { name: '设置', icon: 'setting', type: 'setting', url: '/pages/setting/index' },
-    ],
+    userInfo: {},
+    lingliBalance: 0,
   },
 
-  onLoad() {
-    this.getServiceList();
-  },
+  onShow() {
+    const { userInfo, lingliBalance } = app.globalData;
+    this.setData({
+      userInfo: userInfo || {},
+      lingliBalance: lingliBalance || 0,
+    });
 
-  async onShow() {
-    const Token = wx.getStorageSync('access_token');
-    const personalInfo = await this.getPersonalInfo();
-
-    if (Token) {
-      this.setData({
-        isLoad: true,
-        personalInfo,
-      });
-    }
-  },
-
-  getServiceList() {
-    request('/api/getServiceList').then((res) => {
-      const { service } = res.data.data;
-      this.setData({ service });
+    app.eventBus.on('lingli-changed', (balance) => {
+      this.setData({ lingliBalance: balance });
+    });
+    app.eventBus.on('userinfo-updated', (info) => {
+      this.setData({ userInfo: info });
     });
   },
 
-  async getPersonalInfo() {
-    const info = await request('/api/genPersonalInfo').then((res) => res.data.data);
-    return info;
+  onHide() {
+    app.eventBus.off('lingli-changed');
+    app.eventBus.off('userinfo-updated');
   },
 
-  onLogin(e) {
-    wx.navigateTo({
-      url: '/pages/login/login',
-    });
+  onLogin() {
+    if (app.globalData.userInfo && app.globalData.userInfo.nickName) return;
+    wx.navigateTo({ url: '/pages/login/login' });
   },
 
-  onNavigateTo() {
-    wx.navigateTo({ url: `/pages/my/info-edit/index` });
+  goHistory() {
+    wx.navigateTo({ url: '/pages/history/index' });
   },
 
-  onEleClick(e) {
-    const { name, url } = e.currentTarget.dataset.data;
-    if (url) return;
-    this.onShowToast('#t-toast', name);
+  goMembership() {
+    wx.navigateTo({ url: '/pages/membership/index' });
+  },
+
+  goLingli() {
+    wx.navigateTo({ url: '/pages/lingli/index' });
+  },
+
+  goSetting() {
+    wx.navigateTo({ url: '/pages/setting/index' });
+  },
+
+  onShare() {
+    wx.navigateTo({ url: '/pages/poster/index?type=invite' });
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '听听 - 万物皆有灵，万事皆可听',
+      path: `/pages/home/index?inviterId=${app.globalData.openid}`,
+      imageUrl: '/static/images/share-cover.png',
+    };
   },
 });

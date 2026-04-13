@@ -1,0 +1,294 @@
+@import '/variable.less';
+
+.report {
+  min-height: 100vh;
+  background: @bg-page;
+  padding: 24rpx 32rpx 120rpx;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: -60rpx;
+    right: -80rpx;
+    width: 350rpx;
+    height: 350rpx;
+    border-radius: 50%;
+    background: @orb-purple;
+    pointer-events: none;
+  }
+
+  // ====== 八字卡片 ======
+  &__bazi-card {
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid @glass-border;
+    border-radius: 28rpx;
+    padding: 32rpx;
+    margin-bottom: 24rpx;
+    box-shadow: @glass-shadow;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__bazi-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 26rpx;
+    color: @text-color-secondary;
+    margin-bottom: 24rpx;
+    letter-spacing: 2rpx;
+  }
+
+  &__bazi-name {
+    font-size: 30rpx;
+    font-weight: 600;
+    color: @brand-color-deep;
+    letter-spacing: 4rpx;
+  }
+  &__bazi-pillars { display: flex; justify-content: space-around; margin-bottom: 24rpx; }
+  &__pillar { display: flex; flex-direction: column; align-items: center; gap: 8rpx; }
+  &__pillar-label { font-size: 22rpx; color: @text-color-hint; }
+  &__pillar-gan { font-size: 40rpx; font-weight: 700; color: @gold-color; }
+  &__pillar-zhi { font-size: 40rpx; font-weight: 700; color: @brand-color-deep; }
+
+  &__bazi-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 22rpx;
+    color: @text-color-hint;
+    padding-top: 16rpx;
+    border-top: 1rpx solid rgba(30, 27, 75, 0.05);
+  }
+
+  // ====== 姓名五格 ======
+  &__name-card {
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid @glass-border;
+    border-radius: 28rpx;
+    padding: 32rpx;
+    margin-bottom: 24rpx;
+    box-shadow: @glass-shadow;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__name-title { font-size: 26rpx; color: @text-color-secondary; margin-bottom: 24rpx; letter-spacing: 2rpx; }
+
+  &__name-grids {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  &__name-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8rpx;
+  }
+
+  &__name-grid-label { font-size: 22rpx; color: @text-color-hint; }
+  &__name-grid-value { font-size: 36rpx; font-weight: 700; color: @brand-color-deep; }
+  &__name-grid-wuxing { font-size: 24rpx; color: @gold-color; font-weight: 600; }
+
+  // ====== 听听一语 ======
+  &__summary-card {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(196, 181, 253, 0.06) 100%);
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid rgba(139, 92, 246, 0.15);
+    border-radius: 28rpx;
+    padding: 36rpx 32rpx;
+    margin-bottom: 24rpx;
+    text-align: center;
+    box-shadow: @glass-shadow;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__summary-label { font-size: 22rpx; color: @brand-color; letter-spacing: 6rpx; margin-bottom: 20rpx; opacity: 0.7; }
+
+  &__summary-text {
+    font-size: 36rpx;
+    color: @text-color-primary;
+    font-weight: 600;
+    line-height: 56rpx;
+    letter-spacing: 4rpx;
+  }
+
+  &__summary-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16rpx;
+    color: @text-color-secondary;
+    font-size: 26rpx;
+  }
+
+  &__summary-action { margin-top: 20rpx; color: @brand-color; font-size: 26rpx; }
+
+  &__loading-glow {
+    width: 60rpx;
+    height: 60rpx;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.5) 0%, rgba(139, 92, 246, 0.25) 50%, transparent 70%);
+    animation: loadingGlow 1.5s ease-in-out infinite;
+  }
+
+  // ====== 五行能量 ======
+  &__energy-card {
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid @glass-border;
+    border-radius: 28rpx;
+    padding: 32rpx;
+    margin-bottom: 24rpx;
+    box-shadow: @glass-shadow;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__energy-title { font-size: 26rpx; color: @text-color-secondary; margin-bottom: 24rpx; letter-spacing: 2rpx; }
+  &__energy-chart { display: flex; justify-content: center; margin-bottom: 24rpx; }
+  &__canvas { width: 400rpx; height: 400rpx; }
+  &__energy-bars { display: flex; flex-direction: column; gap: 16rpx; }
+  &__energy-bar { display: flex; align-items: center; gap: 16rpx; }
+  &__energy-name { width: 40rpx; font-size: 26rpx; font-weight: 600; text-align: center; }
+
+  &__energy-track {
+    flex: 1;
+    height: 12rpx;
+    background: @brand-color-pale;
+    border-radius: 6rpx;
+    overflow: hidden;
+  }
+
+  &__energy-fill { height: 100%; border-radius: 6rpx; transition: width 1s ease; }
+  &__energy-val { width: 60rpx; text-align: right; font-size: 24rpx; color: @text-color-secondary; }
+
+  &__energy-interpretation {
+    margin-top: 20rpx;
+    padding: 16rpx;
+    background: @brand-color-pale;
+    border-radius: 12rpx;
+    font-size: 24rpx;
+    color: @text-color-secondary;
+    text-align: center;
+    line-height: 36rpx;
+  }
+
+  // ====== 深度解析 ======
+  &__deep-card {
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid @glass-border;
+    border-radius: 28rpx;
+    padding: 32rpx;
+    margin-bottom: 24rpx;
+    box-shadow: @glass-shadow;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__deep-title { font-size: 26rpx; color: @text-color-secondary; margin-bottom: 24rpx; letter-spacing: 2rpx; }
+  &__deep-locked { position: relative; }
+
+  &__deep-blur {
+    filter: blur(6rpx);
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  &__deep-blur-item { padding: 16rpx 0; font-size: 26rpx; color: @text-color-secondary; }
+
+  &__deep-unlock {
+    text-align: center;
+    padding: 24rpx;
+    margin-top: 24rpx;
+    background: linear-gradient(135deg, @brand-color 0%, #A78BFA 100%);
+    border-radius: 40rpx;
+    color: #fff;
+    font-size: 28rpx;
+    font-weight: 600;
+    box-shadow: 0 8rpx 24rpx @brand-color-glow;
+    &:active { transform: scale(0.97); }
+  }
+
+  &__deep-ad {
+    text-align: center;
+    margin-top: 16rpx;
+    padding: 20rpx;
+    border: 1rpx solid rgba(139, 92, 246, 0.12);
+    border-radius: 40rpx;
+    color: @text-color-secondary;
+    font-size: 26rpx;
+    &:active { background: @brand-color-pale; }
+  }
+
+  &__deep-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48rpx 0;
+    gap: 16rpx;
+    color: @text-color-secondary;
+    font-size: 26rpx;
+  }
+
+  &__deep-content { display: flex; flex-direction: column; gap: 24rpx; }
+
+  &__dimension {
+    background: rgba(139, 92, 246, 0.04);
+    border-radius: 20rpx;
+    padding: 24rpx;
+    border: 1rpx solid rgba(139, 92, 246, 0.06);
+  }
+
+  &__dimension-header { display: flex; align-items: center; margin-bottom: 16rpx; }
+  &__dimension-icon { font-size: 36rpx; margin-right: 12rpx; }
+  &__dimension-name { font-size: 30rpx; font-weight: 600; color: @text-color-primary; flex: 1; }
+  &__dimension-score { font-size: 28rpx; color: @gold-color; font-weight: 600; }
+  &__dimension-analysis { font-size: 26rpx; color: @text-color-secondary; line-height: 40rpx; margin-bottom: 16rpx; }
+  &__dimension-advice { display: flex; flex-direction: column; gap: 8rpx; }
+  &__advice-item { display: flex; font-size: 24rpx; color: @text-color-primary; line-height: 36rpx; }
+  &__advice-dot { color: @brand-color; margin-right: 8rpx; flex-shrink: 0; }
+
+  // ====== 底部 ======
+  &__footer { display: flex; gap: 24rpx; margin-top: 32rpx; position: relative; z-index: 1; }
+
+  &__footer-btn {
+    flex: 1;
+    text-align: center;
+    padding: 24rpx;
+    border-radius: 40rpx;
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid @glass-border;
+    color: @text-color-primary;
+    font-size: 28rpx;
+    box-shadow: @glass-shadow;
+
+    &:active { background: @brand-color-pale; }
+
+    &--primary {
+      background: linear-gradient(135deg, @brand-color 0%, #A78BFA 100%);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4rpx 16rpx @brand-color-glow;
+    }
+  }
+}
+
+@keyframes loadingGlow {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
+}

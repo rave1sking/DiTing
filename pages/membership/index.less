@@ -1,0 +1,118 @@
+@import '/variable.less';
+
+.vip {
+  min-height: 100vh;
+  background: @bg-page;
+  padding: 0 32rpx 140rpx;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: -40rpx;
+    left: -60rpx;
+    width: 300rpx;
+    height: 300rpx;
+    border-radius: 50%;
+    background: @orb-purple;
+    pointer-events: none;
+  }
+
+  &__header { text-align: center; padding: 60rpx 0 40rpx; position: relative; z-index: 1; }
+  &__crown { font-size: 72rpx; display: block; margin-bottom: 16rpx; }
+  &__status-text { font-size: 40rpx; font-weight: 800; color: @gold-color; display: block; margin-bottom: 8rpx; }
+  &__expire { font-size: 24rpx; color: @text-color-secondary; }
+
+  &__benefits {
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 1rpx solid rgba(217, 119, 6, 0.15);
+    border-radius: 28rpx;
+    padding: 32rpx;
+    margin-bottom: 32rpx;
+    box-shadow: @glass-shadow;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__benefit-title { font-size: 28rpx; color: @gold-color; font-weight: 600; margin-bottom: 24rpx; }
+  &__benefit-list { display: flex; flex-direction: column; gap: 20rpx; }
+  &__benefit-item { display: flex; align-items: flex-start; gap: 16rpx; }
+  &__benefit-icon { font-size: 36rpx; flex-shrink: 0; margin-top: 4rpx; }
+  &__benefit-info { flex: 1; }
+  &__benefit-name { font-size: 28rpx; color: @text-color-primary; font-weight: 600; display: block; margin-bottom: 4rpx; }
+  &__benefit-desc { font-size: 22rpx; color: @text-color-hint; display: block; }
+
+  &__products { margin-bottom: 32rpx; position: relative; z-index: 1; }
+  &__product-title { font-size: 28rpx; color: @text-color-primary; font-weight: 600; margin-bottom: 20rpx; }
+
+  &__product-card {
+    background: @glass-bg;
+    backdrop-filter: @glass-blur;
+    -webkit-backdrop-filter: @glass-blur;
+    border: 2rpx solid @glass-border;
+    border-radius: 24rpx;
+    padding: 28rpx;
+    margin-bottom: 16rpx;
+    position: relative;
+    transition: all 0.2s;
+    box-shadow: @glass-shadow;
+
+    &.selected {
+      border-color: @brand-color;
+      background: rgba(139, 92, 246, 0.06);
+      box-shadow: 0 0 20rpx @brand-color-glow;
+    }
+
+    &--highlight {
+      border-color: rgba(217, 119, 6, 0.2);
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.06) 0%, @glass-bg 100%);
+      &.selected { border-color: @gold-color; box-shadow: 0 0 20rpx rgba(217, 119, 6, 0.15); }
+    }
+
+    &:active { transform: scale(0.98); }
+  }
+
+  &__product-badge {
+    position: absolute; top: -2rpx; right: 24rpx;
+    background: linear-gradient(135deg, @gold-color-warm, @gold-color);
+    color: #fff; font-size: 20rpx; font-weight: 600; padding: 4rpx 16rpx;
+    border-radius: 0 0 8rpx 8rpx;
+  }
+
+  &__product-tag {
+    position: absolute; top: 12rpx; right: 16rpx;
+    background: rgba(220, 38, 38, 0.08); color: @wuxing-fire; font-size: 20rpx; padding: 4rpx 12rpx; border-radius: 8rpx;
+  }
+
+  &__product-row {
+    display: flex; gap: 16rpx;
+    .vip__product-card { flex: 1; margin-bottom: 0; }
+  }
+
+  &__product-name { font-size: 28rpx; color: @text-color-primary; font-weight: 600; margin-bottom: 8rpx; }
+  &__product-price { display: flex; align-items: baseline; margin-bottom: 8rpx; }
+  &__price-symbol { font-size: 26rpx; color: @gold-color; font-weight: 600; }
+  &__price-amount { font-size: 48rpx; color: @gold-color; font-weight: 800; line-height: 1; }
+  &__price-unit { font-size: 22rpx; color: @text-color-hint; margin-left: 4rpx; }
+  &__product-desc { font-size: 22rpx; color: @text-color-hint; }
+
+  &__action {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    padding: 24rpx 32rpx;
+    padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+    background: linear-gradient(0deg, @bg-base 60%, transparent);
+    z-index: 10;
+  }
+
+  &__buy-btn {
+    text-align: center; padding: 28rpx; border-radius: 48rpx;
+    background: linear-gradient(135deg, @gold-color-warm 0%, @gold-color 100%);
+    color: #fff; font-size: 32rpx; font-weight: 700; letter-spacing: 2rpx;
+    box-shadow: 0 8rpx 32rpx rgba(217, 119, 6, 0.25);
+    &:active { transform: scale(0.97); }
+    &.disabled { opacity: 0.4; box-shadow: none; }
+  }
+}

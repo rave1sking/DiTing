@@ -1,22 +1,41 @@
 {
-  "pages": ["pages/home/index", "pages/message/index", "pages/my/index"],
+  "pages": [
+    "pages/home/index",
+    "pages/ear/index",
+    "pages/my/index"
+  ],
   "usingComponents": {
     "t-toast": "tdesign-miniprogram/toast/toast"
   },
   "subpackages": [
     {
-      "root": "pages/search",
-      "name": "search",
+      "root": "pages/paipan",
+      "name": "paipan",
       "pages": ["index"]
     },
     {
-      "root": "pages/my/info-edit",
-      "name": "edit",
+      "root": "pages/report",
+      "name": "report",
       "pages": ["index"]
     },
     {
-      "root": "pages/chat",
-      "name": "chat",
+      "root": "pages/history",
+      "name": "history",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/lingli",
+      "name": "lingli",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/membership",
+      "name": "membership",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/poster",
+      "name": "poster",
       "pages": ["index"]
     },
     {
@@ -25,42 +44,30 @@
       "pages": ["login"]
     },
     {
-      "root": "pages/loginCode",
-      "name": "loginCode",
-      "pages": ["loginCode"]
-    },
-    {
-      "root": "pages/dataCenter",
-      "name": "dataCenter",
-      "pages": ["index"]
-    },
-    {
       "root": "pages/setting",
       "name": "setting",
-      "pages": ["index"]
-    },
-    {
-      "root": "pages/release",
-      "name": "release",
       "pages": ["index"]
     }
   ],
   "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Weixin",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#FAF5FF",
+    "navigationBarTitleText": "听听",
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
     "custom": true,
+    "color": "#9CA3AF",
+    "selectedColor": "#8B5CF6",
+    "backgroundColor": "#FAF5FF",
     "list": [
       {
         "pagePath": "pages/home/index",
-        "text": "首页"
+        "text": "谛听"
       },
       {
-        "pagePath": "pages/message/index",
-        "text": "消息"
+        "pagePath": "pages/ear/index",
+        "text": "灵耳"
       },
       {
         "pagePath": "pages/my/index",
