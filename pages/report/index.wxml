@@ -16,6 +16,11 @@
       <text>日主：{{dayMaster}}（{{dayMasterElement}}）</text>
       <text>{{lunarInfo}}</text>
     </view>
+    <view wx:if="{{birthPlaceText || currentPlaceText}}" class="report__bazi-places">
+      <text wx:if="{{birthPlaceText}}">出生地：{{birthPlaceText}}</text>
+      <text wx:if="{{currentPlaceText}}">所在地：{{currentPlaceText}}</text>
+    </view>
+    <view wx:if="{{solarTimeTip}}" class="report__bazi-tip">{{solarTimeTip}}</view>
   </view>
 
   <!-- 姓名五格 -->

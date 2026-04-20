@@ -66,6 +66,28 @@
       </view>
     </view>
 
+    <!-- 出生地 -->
+    <view class="paipan__field" bindtap="openBirthCityPicker">
+      <text class="paipan__label">出生地</text>
+      <view class="paipan__value-row">
+        <text class="paipan__value {{birthCityName ? '' : 'placeholder'}}">
+          {{birthCityName || '请选择出生城市'}}
+        </text>
+        <text class="paipan__arrow">></text>
+      </view>
+    </view>
+
+    <!-- 所在地 -->
+    <view class="paipan__field" bindtap="openCurrentCityPicker">
+      <text class="paipan__label">所在地</text>
+      <view class="paipan__value-row">
+        <text class="paipan__value {{currentCityName ? '' : 'placeholder'}}">
+          {{currentCityName || '请选择当前所在城市'}}
+        </text>
+        <text class="paipan__arrow">></text>
+      </view>
+    </view>
+
     <!-- 提交按钮 -->
     <view class="paipan__submit">
       <view
@@ -99,5 +121,27 @@
     bindcancel="onShichenCancel"
   >
     <t-picker-item options="{{shichenOptions}}" />
+  </t-picker>
+
+  <!-- 出生地选择器 -->
+  <t-picker
+    visible="{{showBirthCityPicker}}"
+    value="{{[birthCityIndex]}}"
+    title="选择出生城市"
+    bindconfirm="onBirthCityConfirm"
+    bindcancel="onBirthCityCancel"
+  >
+    <t-picker-item options="{{cityOptions}}" />
+  </t-picker>
+
+  <!-- 所在地选择器 -->
+  <t-picker
+    visible="{{showCurrentCityPicker}}"
+    value="{{[currentCityIndex]}}"
+    title="选择当前所在城市"
+    bindconfirm="onCurrentCityConfirm"
+    bindcancel="onCurrentCityCancel"
+  >
+    <t-picker-item options="{{cityOptions}}" />
   </t-picker>
 </view>

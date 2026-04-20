@@ -11,6 +11,9 @@ Page({
     reportId: '',
     userName: '',
     nameGrids: [],
+    birthPlaceText: '',
+    currentPlaceText: '',
+    solarTimeTip: '',
     pillarLabels: [],
     dayMaster: '',
     dayMasterElement: '',
@@ -38,7 +41,7 @@ Page({
         return;
       }
 
-      const { pillars, dayMaster, dayMasterElement, wuxingEnergy, nameAnalysis } = report.baziRaw;
+      const { pillars, dayMaster, dayMasterElement, wuxingEnergy, nameAnalysis, solarTimeInfo } = report.baziRaw;
       const lunar = report.baziRaw.lunar;
       const userName = report.birthInfo.name || report.baziRaw.name || '';
 
@@ -49,9 +52,23 @@ Page({
         });
       }
 
+      const birthPlace = report.birthInfo.birthPlace || report.baziRaw.birthPlace;
+      const currentPlace = report.birthInfo.currentPlace || report.baziRaw.currentPlace;
+      const birthPlaceText = birthPlace ? `${birthPlace.province}·${birthPlace.name}` : '';
+      const currentPlaceText = currentPlace ? `${currentPlace.province}·${currentPlace.name}` : '';
+
+      let solarTimeTip = '';
+      if (solarTimeInfo && solarTimeInfo.corrected) {
+        const sign = solarTimeInfo.diffMinutes >= 0 ? '+' : '';
+        solarTimeTip = `已按出生地经度校正真太阳时（${sign}${solarTimeInfo.diffMinutes}分）`;
+      }
+
       this.setData({
         userName,
         nameGrids,
+        birthPlaceText,
+        currentPlaceText,
+        solarTimeTip,
         pillarLabels: [
           { label: '年柱', gan: pillars.year.gan, zhi: pillars.year.zhi },
           { label: '月柱', gan: pillars.month.gan, zhi: pillars.month.zhi },

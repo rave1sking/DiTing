@@ -6,6 +6,59 @@
 const TIANGAN = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
 const DIZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
+// 常用城市经纬度数据（用于真太阳时校正和方位五行）
+const CITY_DATA = [
+  { name: '北京', lng: 116.40, lat: 39.90, province: '北京' },
+  { name: '上海', lng: 121.47, lat: 31.23, province: '上海' },
+  { name: '广州', lng: 113.26, lat: 23.13, province: '广东' },
+  { name: '深圳', lng: 114.06, lat: 22.54, province: '广东' },
+  { name: '成都', lng: 104.07, lat: 30.67, province: '四川' },
+  { name: '杭州', lng: 120.15, lat: 30.27, province: '浙江' },
+  { name: '武汉', lng: 114.31, lat: 30.60, province: '湖北' },
+  { name: '南京', lng: 118.78, lat: 32.04, province: '江苏' },
+  { name: '西安', lng: 108.94, lat: 34.27, province: '陕西' },
+  { name: '重庆', lng: 106.55, lat: 29.56, province: '重庆' },
+  { name: '天津', lng: 117.20, lat: 39.13, province: '天津' },
+  { name: '苏州', lng: 120.59, lat: 31.30, province: '江苏' },
+  { name: '长沙', lng: 112.94, lat: 28.23, province: '湖南' },
+  { name: '郑州', lng: 113.63, lat: 34.75, province: '河南' },
+  { name: '青岛', lng: 120.38, lat: 36.07, province: '山东' },
+  { name: '济南', lng: 117.00, lat: 36.65, province: '山东' },
+  { name: '沈阳', lng: 123.43, lat: 41.80, province: '辽宁' },
+  { name: '大连', lng: 121.62, lat: 38.92, province: '辽宁' },
+  { name: '哈尔滨', lng: 126.64, lat: 45.75, province: '黑龙江' },
+  { name: '长春', lng: 125.32, lat: 43.82, province: '吉林' },
+  { name: '合肥', lng: 117.27, lat: 31.86, province: '安徽' },
+  { name: '福州', lng: 119.30, lat: 26.08, province: '福建' },
+  { name: '厦门', lng: 118.10, lat: 24.46, province: '福建' },
+  { name: '南昌', lng: 115.89, lat: 28.68, province: '江西' },
+  { name: '昆明', lng: 102.72, lat: 25.04, province: '云南' },
+  { name: '贵阳', lng: 106.63, lat: 26.65, province: '贵州' },
+  { name: '南宁', lng: 108.37, lat: 22.82, province: '广西' },
+  { name: '海口', lng: 110.32, lat: 20.03, province: '海南' },
+  { name: '太原', lng: 112.55, lat: 37.87, province: '山西' },
+  { name: '石家庄', lng: 114.50, lat: 38.05, province: '河北' },
+  { name: '兰州', lng: 103.83, lat: 36.06, province: '甘肃' },
+  { name: '乌鲁木齐', lng: 87.62, lat: 43.82, province: '新疆' },
+  { name: '拉萨', lng: 91.11, lat: 29.65, province: '西藏' },
+  { name: '呼和浩特', lng: 111.73, lat: 40.84, province: '内蒙古' },
+  { name: '银川', lng: 106.23, lat: 38.49, province: '宁夏' },
+  { name: '西宁', lng: 101.78, lat: 36.62, province: '青海' },
+  { name: '香港', lng: 114.17, lat: 22.28, province: '香港' },
+  { name: '澳门', lng: 113.55, lat: 22.19, province: '澳门' },
+  { name: '台北', lng: 121.52, lat: 25.03, province: '台湾' },
+];
+
+// 方位五行（按出生地或所在地纬度+经度划分大致方位）
+function getLocationWuxing(lng, lat) {
+  // 中国版图参考中心约 105°E, 35°N
+  // 东=木, 南=火, 西=金, 北=水, 中=土
+  if (lat >= 32 && Math.abs(lng - 105) <= 10) return '土'; // 中原
+  if (lng >= 115) return lat >= 33 ? '木' : '火'; // 东部
+  if (lng < 105) return lat >= 35 ? '金' : '水';  // 西部
+  return lat >= 35 ? '水' : '火';
+}
+
 const SHICHEN_MAP = [
   { name: '子时', hours: [23, 0], label: '23:00-01:00' },
   { name: '丑时', hours: [1, 2], label: '01:00-03:00' },
@@ -102,6 +155,23 @@ function getDayGanZhi(year, month, day) {
   return { gan: TIANGAN[idx % 10], zhi: DIZHI[idx % 12] };
 }
 
+// 真太阳时校正：根据经度调整时辰索引
+// 北京时间以 120°E 为基准，每偏离 1° 相差 4 分钟
+// 返回校正后的小时浮点值（0-24）
+function applySolarTimeCorrection(hour, lng) {
+  if (lng == null) return hour;
+  const diffMinutes = (lng - 120) * 4;
+  const correctedHour = hour + diffMinutes / 60;
+  return ((correctedHour % 24) + 24) % 24;
+}
+
+// 根据校正后的真太阳时推算时辰索引
+function getShichenIndexFromHour(hour) {
+  const h = Math.round(hour);
+  if (h >= 23 || h < 1) return 0;
+  return Math.floor((h + 1) / 2);
+}
+
 function getTimeGanZhi(dayGan, shichenIndex) {
   const dayGanIdx = TIANGAN.indexOf(dayGan);
   // 日上起时：甲己起甲子，乙庚起丙子...
@@ -195,11 +265,26 @@ function calcWuxingEnergy(wuxingCount) {
   return energy;
 }
 
-function calculateBazi(year, month, day, shichenIndex, gender, name) {
+function calculateBazi(year, month, day, shichenIndex, gender, name, birthPlace, currentPlace) {
+  // 真太阳时校正：若有出生地，根据其经度校正时辰
+  let realShichenIndex = shichenIndex;
+  let solarTimeInfo = null;
+  if (birthPlace && typeof birthPlace.lng === 'number') {
+    const originalHour = SHICHEN_MAP[shichenIndex].hours[0];
+    const correctedHour = applySolarTimeCorrection(originalHour, birthPlace.lng);
+    realShichenIndex = getShichenIndexFromHour(correctedHour);
+    solarTimeInfo = {
+      originalHour,
+      correctedHour: Math.round(correctedHour * 100) / 100,
+      diffMinutes: Math.round((birthPlace.lng - 120) * 4),
+      corrected: realShichenIndex !== shichenIndex,
+    };
+  }
+
   const yearGZ = getYearGanZhi(year, month, day);
   const monthGZ = getMonthGanZhi(year, month, day);
   const dayGZ = getDayGanZhi(year, month, day);
-  const timeGZ = getTimeGanZhi(dayGZ.gan, shichenIndex);
+  const timeGZ = getTimeGanZhi(dayGZ.gan, realShichenIndex);
 
   const pillars = {
     year: { gan: yearGZ.gan, zhi: yearGZ.zhi, full: yearGZ.gan + yearGZ.zhi },
@@ -211,13 +296,24 @@ function calculateBazi(year, month, day, shichenIndex, gender, name) {
   const baziWuxingCount = countWuxing(pillars);
   const nameAnalysis = name ? calcNameWuxing(name) : null;
 
-  // 姓名五格五行融合八字五行
+  // 方位五行加成：出生地 + 所在地
+  const locationWuxing = { birth: null, current: null };
+  if (birthPlace && typeof birthPlace.lng === 'number') {
+    locationWuxing.birth = getLocationWuxing(birthPlace.lng, birthPlace.lat);
+  }
+  if (currentPlace && typeof currentPlace.lng === 'number') {
+    locationWuxing.current = getLocationWuxing(currentPlace.lng, currentPlace.lat);
+  }
+
+  // 姓名五格五行 + 方位五行 融合八字五行
   const wuxingCount = { ...baziWuxingCount };
   if (nameAnalysis) {
     Object.keys(nameAnalysis.nameWuxingCount).forEach((key) => {
       wuxingCount[key] += nameAnalysis.nameWuxingCount[key];
     });
   }
+  if (locationWuxing.birth) wuxingCount[locationWuxing.birth] += 1;
+  if (locationWuxing.current) wuxingCount[locationWuxing.current] += 1;
 
   const dayMaster = dayGZ.gan;
   const dayMasterElement = TIANGAN_WUXING[dayMaster];
@@ -226,19 +322,28 @@ function calculateBazi(year, month, day, shichenIndex, gender, name) {
   return {
     solar: { year, month, day, hour: SHICHEN_MAP[shichenIndex].hours[0] },
     lunar,
-    shichen: SHICHEN_MAP[shichenIndex],
+    shichen: SHICHEN_MAP[realShichenIndex],
+    originalShichen: SHICHEN_MAP[shichenIndex],
+    solarTimeInfo,
     pillars,
     baziString: `${pillars.year.full} ${pillars.month.full} ${pillars.day.full} ${pillars.time.full}`,
     dayMaster,
     dayMasterElement,
     name: name || '',
     nameAnalysis,
+    birthPlace: birthPlace || null,
+    currentPlace: currentPlace || null,
+    locationWuxing,
     baziWuxingCount,
     wuxingCount,
     wuxingEnergy: calcWuxingEnergy(wuxingCount),
     gender,
     dayunList: [],
   };
+}
+
+function getCityList() {
+  return CITY_DATA.slice();
 }
 
 function getShichenList() {
@@ -248,6 +353,8 @@ function getShichenList() {
 module.exports = {
   calculateBazi,
   getShichenList,
+  getCityList,
+  CITY_DATA,
   SHICHEN_MAP,
   TIANGAN_WUXING,
   DIZHI_WUXING,
