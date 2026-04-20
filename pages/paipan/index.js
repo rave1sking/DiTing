@@ -1,8 +1,23 @@
 import { addReport } from '../../utils/cloud';
 
-const { calculateBazi, getShichenList, getCityList } = require('../../utils/bazi');
+const { calculateBazi, getShichenList } = require('../../utils/bazi');
+const { REGIONS, resolveLocation } = require('../../utils/regions');
+const { solarToLunar, formatLunar } = require('../../utils/lunar');
+
 const shichenList = getShichenList();
-const cityList = getCityList();
+const provinceOptions = REGIONS.map((p, i) => ({ label: p.name, value: i }));
+
+function buildCityOptions(provinceIdx) {
+  if (provinceIdx < 0 || provinceIdx >= REGIONS.length) return [];
+  return REGIONS[provinceIdx].cities.map((c, i) => ({ label: c.name, value: i }));
+}
+
+function buildDistrictOptions(provinceIdx, cityIdx) {
+  if (provinceIdx < 0 || provinceIdx >= REGIONS.length) return [];
+  const cities = REGIONS[provinceIdx].cities;
+  if (cityIdx < 0 || cityIdx >= cities.length) return [];
+  return cities[cityIdx].districts.map((d, i) => ({ label: d.name, value: i }));
+}
 
 Page({
   data: {
@@ -10,26 +25,31 @@ Page({
     gender: '',
     birthDate: '',
     dateValue: '2000-01-01',
+    lunarDateText: '',
     shichenIndex: 0,
     shichenName: '',
-    birthCityIndex: -1,
-    birthCityName: '',
-    currentCityIndex: -1,
-    currentCityName: '',
     showDatePicker: false,
     showShichenPicker: false,
-    showBirthCityPicker: false,
-    showCurrentCityPicker: false,
     canSubmit: false,
     today: new Date().toISOString().slice(0, 10),
     shichenOptions: shichenList.map((s) => ({
       label: `${s.name}（${s.label}）`,
       value: s.index,
     })),
-    cityOptions: cityList.map((c, i) => ({
-      label: `${c.province}·${c.name}`,
-      value: i,
-    })),
+
+    showBirthRegionPicker: false,
+    birthRegionValue: [0, 0, 0],
+    birthRegionText: '',
+    birthProvinceOptions: provinceOptions,
+    birthCityOptions: buildCityOptions(0),
+    birthDistrictOptions: buildDistrictOptions(0, 0),
+
+    showCurrentRegionPicker: false,
+    currentRegionValue: [0, 0, 0],
+    currentRegionText: '',
+    currentProvinceOptions: provinceOptions,
+    currentCityOptions: buildCityOptions(0),
+    currentDistrictOptions: buildDistrictOptions(0, 0),
   },
 
   onNameInput(e) {
@@ -46,7 +66,16 @@ Page({
   onDateCancel() { this.setData({ showDatePicker: false }); },
 
   onDateConfirm(e) {
-    this.setData({ birthDate: e.detail.value, dateValue: e.detail.value, showDatePicker: false });
+    const birthDate = e.detail.value;
+    const [y, m, d] = birthDate.split('-').map(Number);
+    const lunar = solarToLunar(y, m, d);
+    const lunarDateText = lunar ? formatLunar(lunar.year, lunar.month, lunar.day, lunar.isLeap) : '';
+    this.setData({
+      birthDate,
+      dateValue: birthDate,
+      lunarDateText,
+      showDatePicker: false,
+    });
     this.checkSubmit();
   },
 
@@ -63,39 +92,77 @@ Page({
     this.checkSubmit();
   },
 
-  openBirthCityPicker() { this.setData({ showBirthCityPicker: true }); },
-  onBirthCityCancel() { this.setData({ showBirthCityPicker: false }); },
+  openBirthRegionPicker() { this.setData({ showBirthRegionPicker: true }); },
+  onBirthRegionCancel() { this.setData({ showBirthRegionPicker: false }); },
 
-  onBirthCityConfirm(e) {
-    const idx = e.detail.value[0];
-    const city = cityList[idx];
+  onBirthRegionPick(e) {
+    const { column, index } = e.detail;
+    const [p, c] = this.data.birthRegionValue;
+    if (column === 0) {
+      this.setData({
+        birthRegionValue: [index, 0, 0],
+        birthCityOptions: buildCityOptions(index),
+        birthDistrictOptions: buildDistrictOptions(index, 0),
+      });
+    } else if (column === 1) {
+      this.setData({
+        birthRegionValue: [p, index, 0],
+        birthDistrictOptions: buildDistrictOptions(p, index),
+      });
+    } else {
+      this.setData({ birthRegionValue: [p, c, index] });
+    }
+  },
+
+  onBirthRegionConfirm(e) {
+    const [p, c, d] = e.detail.value;
+    const location = resolveLocation(p, c, d);
     this.setData({
-      birthCityIndex: idx,
-      birthCityName: `${city.province}·${city.name}`,
-      showBirthCityPicker: false,
+      birthRegionValue: [p, c, d],
+      birthRegionText: location ? location.fullName : '',
+      showBirthRegionPicker: false,
     });
     this.checkSubmit();
   },
 
-  openCurrentCityPicker() { this.setData({ showCurrentCityPicker: true }); },
-  onCurrentCityCancel() { this.setData({ showCurrentCityPicker: false }); },
+  openCurrentRegionPicker() { this.setData({ showCurrentRegionPicker: true }); },
+  onCurrentRegionCancel() { this.setData({ showCurrentRegionPicker: false }); },
 
-  onCurrentCityConfirm(e) {
-    const idx = e.detail.value[0];
-    const city = cityList[idx];
+  onCurrentRegionPick(e) {
+    const { column, index } = e.detail;
+    const [p, c] = this.data.currentRegionValue;
+    if (column === 0) {
+      this.setData({
+        currentRegionValue: [index, 0, 0],
+        currentCityOptions: buildCityOptions(index),
+        currentDistrictOptions: buildDistrictOptions(index, 0),
+      });
+    } else if (column === 1) {
+      this.setData({
+        currentRegionValue: [p, index, 0],
+        currentDistrictOptions: buildDistrictOptions(p, index),
+      });
+    } else {
+      this.setData({ currentRegionValue: [p, c, index] });
+    }
+  },
+
+  onCurrentRegionConfirm(e) {
+    const [p, c, d] = e.detail.value;
+    const location = resolveLocation(p, c, d);
     this.setData({
-      currentCityIndex: idx,
-      currentCityName: `${city.province}·${city.name}`,
-      showCurrentCityPicker: false,
+      currentRegionValue: [p, c, d],
+      currentRegionText: location ? location.fullName : '',
+      showCurrentRegionPicker: false,
     });
     this.checkSubmit();
   },
 
   checkSubmit() {
-    const { name, gender, birthDate, shichenName, birthCityIndex, currentCityIndex } = this.data;
+    const { name, gender, birthDate, shichenName, birthRegionText, currentRegionText } = this.data;
     this.setData({
       canSubmit: !!(name && name.length >= 2 && gender && birthDate && shichenName
-        && birthCityIndex >= 0 && currentCityIndex >= 0),
+        && birthRegionText && currentRegionText),
     });
   },
 
@@ -105,15 +172,16 @@ Page({
 
     try {
       const [y, m, d] = this.data.birthDate.split('-').map(Number);
-      const birthCity = cityList[this.data.birthCityIndex];
-      const currentCity = cityList[this.data.currentCityIndex];
+      const birthPlace = resolveLocation(...this.data.birthRegionValue);
+      const currentPlace = resolveLocation(...this.data.currentRegionValue);
+
       const baziResult = calculateBazi(
         y, m, d,
         this.data.shichenIndex,
         this.data.gender,
         this.data.name,
-        birthCity,
-        currentCity,
+        birthPlace,
+        currentPlace,
       );
       const app = getApp();
 
@@ -122,11 +190,12 @@ Page({
         birthInfo: {
           name: this.data.name,
           solarDate: this.data.birthDate,
+          lunarDate: this.data.lunarDateText,
           shichenIndex: this.data.shichenIndex,
           shichenName: this.data.shichenName,
           gender: this.data.gender,
-          birthPlace: birthCity,
-          currentPlace: currentCity,
+          birthPlace,
+          currentPlace,
         },
         baziRaw: baziResult,
         summary: '',

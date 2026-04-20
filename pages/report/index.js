@@ -54,8 +54,14 @@ Page({
 
       const birthPlace = report.birthInfo.birthPlace || report.baziRaw.birthPlace;
       const currentPlace = report.birthInfo.currentPlace || report.baziRaw.currentPlace;
-      const birthPlaceText = birthPlace ? `${birthPlace.province}·${birthPlace.name}` : '';
-      const currentPlaceText = currentPlace ? `${currentPlace.province}·${currentPlace.name}` : '';
+      const formatPlace = (p) => {
+        if (!p) return '';
+        if (p.fullName) return p.fullName;
+        const parts = [p.province, p.city, p.district].filter(Boolean);
+        return parts.length ? parts.join('·') : (p.name || '');
+      };
+      const birthPlaceText = formatPlace(birthPlace);
+      const currentPlaceText = formatPlace(currentPlace);
 
       let solarTimeTip = '';
       if (solarTimeInfo && solarTimeInfo.corrected) {
@@ -77,7 +83,7 @@ Page({
         ],
         dayMaster,
         dayMasterElement,
-        lunarInfo: lunar ? `农历${lunar.year}年${lunar.month}月${lunar.day}` : '',
+        lunarInfo: lunar ? (lunar.text || `农历${lunar.year}年${lunar.month}月${lunar.day}`) : '',
         wuxingList: Object.keys(wuxingEnergy).map((name) => ({
           name, value: wuxingEnergy[name], color: WUXING_COLORS[name] || '#999',
         })),

@@ -44,7 +44,7 @@
       </view>
     </view>
 
-    <!-- 出生日期 -->
+    <!-- 出生日期（阳历） -->
     <view class="paipan__field" bindtap="openDatePicker">
       <text class="paipan__label">出生日期（阳历）</text>
       <view class="paipan__value-row">
@@ -53,6 +53,7 @@
         </text>
         <text class="paipan__arrow">></text>
       </view>
+      <text wx:if="{{lunarDateText}}" class="paipan__hint">农历：{{lunarDateText}}</text>
     </view>
 
     <!-- 出生时辰 -->
@@ -67,22 +68,22 @@
     </view>
 
     <!-- 出生地 -->
-    <view class="paipan__field" bindtap="openBirthCityPicker">
+    <view class="paipan__field" bindtap="openBirthRegionPicker">
       <text class="paipan__label">出生地</text>
       <view class="paipan__value-row">
-        <text class="paipan__value {{birthCityName ? '' : 'placeholder'}}">
-          {{birthCityName || '请选择出生城市'}}
+        <text class="paipan__value {{birthRegionText ? '' : 'placeholder'}}">
+          {{birthRegionText || '请选择出生省市区'}}
         </text>
         <text class="paipan__arrow">></text>
       </view>
     </view>
 
     <!-- 所在地 -->
-    <view class="paipan__field" bindtap="openCurrentCityPicker">
+    <view class="paipan__field" bindtap="openCurrentRegionPicker">
       <text class="paipan__label">所在地</text>
       <view class="paipan__value-row">
-        <text class="paipan__value {{currentCityName ? '' : 'placeholder'}}">
-          {{currentCityName || '请选择当前所在城市'}}
+        <text class="paipan__value {{currentRegionText ? '' : 'placeholder'}}">
+          {{currentRegionText || '请选择当前所在省市区'}}
         </text>
         <text class="paipan__arrow">></text>
       </view>
@@ -106,7 +107,7 @@
     mode="date"
     value="{{dateValue}}"
     format="YYYY-MM-DD"
-    start="1940-01-01"
+    start="1900-01-01"
     end="{{today}}"
     bindconfirm="onDateConfirm"
     bindcancel="onDateCancel"
@@ -123,25 +124,31 @@
     <t-picker-item options="{{shichenOptions}}" />
   </t-picker>
 
-  <!-- 出生地选择器 -->
+  <!-- 出生地选择器（省/市/区） -->
   <t-picker
-    visible="{{showBirthCityPicker}}"
-    value="{{[birthCityIndex]}}"
-    title="选择出生城市"
-    bindconfirm="onBirthCityConfirm"
-    bindcancel="onBirthCityCancel"
+    visible="{{showBirthRegionPicker}}"
+    value="{{birthRegionValue}}"
+    title="选择出生地"
+    bindpick="onBirthRegionPick"
+    bindconfirm="onBirthRegionConfirm"
+    bindcancel="onBirthRegionCancel"
   >
-    <t-picker-item options="{{cityOptions}}" />
+    <t-picker-item options="{{birthProvinceOptions}}" />
+    <t-picker-item options="{{birthCityOptions}}" />
+    <t-picker-item options="{{birthDistrictOptions}}" />
   </t-picker>
 
-  <!-- 所在地选择器 -->
+  <!-- 所在地选择器（省/市/区） -->
   <t-picker
-    visible="{{showCurrentCityPicker}}"
-    value="{{[currentCityIndex]}}"
-    title="选择当前所在城市"
-    bindconfirm="onCurrentCityConfirm"
-    bindcancel="onCurrentCityCancel"
+    visible="{{showCurrentRegionPicker}}"
+    value="{{currentRegionValue}}"
+    title="选择所在地"
+    bindpick="onCurrentRegionPick"
+    bindconfirm="onCurrentRegionConfirm"
+    bindcancel="onCurrentRegionCancel"
   >
-    <t-picker-item options="{{cityOptions}}" />
+    <t-picker-item options="{{currentProvinceOptions}}" />
+    <t-picker-item options="{{currentCityOptions}}" />
+    <t-picker-item options="{{currentDistrictOptions}}" />
   </t-picker>
 </view>
