@@ -1,5 +1,7 @@
 import { getLingliHistory, earnLingli } from '../../utils/cloud';
 
+const { showRewardedVideo } = require('../../utils/ad');
+
 const app = getApp();
 
 const SOURCE_LABELS = {
@@ -55,13 +57,21 @@ Page({
   goCheckin() { wx.switchTab({ url: '/pages/ear/index' }); },
 
   async watchAd() {
+    wx.showLoading({ title: '加载广告...', mask: true });
     try {
+      const completed = await showRewardedVideo();
+      wx.hideLoading();
+      if (!completed) {
+        wx.showToast({ title: '需完整观看才能获得灵力', icon: 'none' });
+        return;
+      }
       await earnLingli(5, 'ad');
       app.refreshLingli();
       this.loadHistory(0);
-      wx.showToast({ title: '+5 灵力值', icon: 'success' });
+      wx.showToast({ title: '+5灵力', icon: 'success' });
     } catch (err) {
-      wx.showToast({ title: '操作失败', icon: 'none' });
+      wx.hideLoading();
+      wx.showToast({ title: err.message || '广告暂不可用', icon: 'none' });
     }
   },
 

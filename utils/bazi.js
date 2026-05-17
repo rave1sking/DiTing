@@ -7,6 +7,11 @@ const TIANGAN = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', 
 const DIZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
 const { solarToLunar, formatLunar } = require('./lunar');
+const {
+  buildTraditionalChart,
+  getMonthIdxByJie,
+  countWuxingWithCangGan,
+} = require('./bazi-traditional');
 
 // 方位五行（按出生地或所在地纬度+经度划分大致方位）
 function getLocationWuxing(lng, lat) {
@@ -43,13 +48,6 @@ const DIZHI_WUXING = {
   '午': '火', '未': '土', '申': '金', '酉': '金', '戌': '土', '亥': '水',
 };
 
-// 节气数据：每月两个节气的近似日期（公历）
-// 月柱以节气"节"为界：立春、惊蛰、清明、立夏、芒种、小暑、立秋、白露、寒露、立冬、大雪、小寒
-const JIE_DATES = [
-  [2, 4], [3, 6], [4, 5], [5, 6], [6, 6], [7, 7],
-  [8, 8], [9, 8], [10, 8], [11, 7], [12, 7], [1, 6],
-];
-
 function solarToJD(year, month, day) {
   if (month <= 2) { year--; month += 12; }
   const A = Math.floor(year / 100);
@@ -71,25 +69,7 @@ function getYearGanZhi(year, month, day) {
 }
 
 function getMonthGanZhi(year, month, day) {
-  // 确定当前处于哪个节气月份（寅月=1月, 卯月=2月...）
-  let monthIdx = 0;
-  for (let i = 0; i < 12; i++) {
-    const [jm, jd] = JIE_DATES[i];
-    const nextI = (i + 1) % 12;
-    const [nm, nd] = JIE_DATES[nextI];
-
-    if (jm <= nm) {
-      if ((month > jm || (month === jm && day >= jd)) && (month < nm || (month === nm && day < nd))) {
-        monthIdx = i;
-        break;
-      }
-    } else {
-      if (month > jm || (month === jm && day >= jd) || month < nm || (month === nm && day < nd)) {
-        monthIdx = i;
-        break;
-      }
-    }
-  }
+  const monthIdx = getMonthIdxByJie(year, month, day);
 
   // 年干决定月干起始（甲己起丙寅）
   const yearGan = getYearGanZhi(year, month, day).gan;
@@ -244,6 +224,7 @@ function calculateBazi(year, month, day, shichenIndex, gender, name, birthPlace,
   };
 
   const baziWuxingCount = countWuxing(pillars);
+  const baziWuxingWithCangGan = countWuxingWithCangGan(pillars, TIANGAN_WUXING, DIZHI_WUXING);
   const nameAnalysis = name ? calcNameWuxing(name) : null;
 
   // 方位五行加成：出生地 + 所在地
@@ -269,6 +250,14 @@ function calculateBazi(year, month, day, shichenIndex, gender, name, birthPlace,
   const dayMasterElement = TIANGAN_WUXING[dayMaster];
   const lunar = solarToLunarExact(year, month, day);
 
+  const traditional = buildTraditionalChart({
+    year, month, day,
+    gender: gender || 'male',
+    pillars,
+    dayGan: dayGZ.gan,
+    dayZhi: dayGZ.zhi,
+  });
+
   return {
     solar: { year, month, day, hour: SHICHEN_MAP[shichenIndex].hours[0] },
     lunar,
@@ -285,10 +274,19 @@ function calculateBazi(year, month, day, shichenIndex, gender, name, birthPlace,
     currentPlace: currentPlace || null,
     locationWuxing,
     baziWuxingCount,
+    baziWuxingWithCangGan,
     wuxingCount,
     wuxingEnergy: calcWuxingEnergy(wuxingCount),
     gender,
-    dayunList: [],
+    traditional,
+    enrichedPillars: traditional.enrichedPillars,
+    kongWang: traditional.kongWang,
+    qiYun: traditional.qiYun,
+    dayun: traditional.dayun,
+    dayunList: traditional.dayun.list,
+    liuNian: traditional.liuNian,
+    shenSha: traditional.shenSha,
+    shishenSummary: traditional.shishenSummary,
   };
 }
 

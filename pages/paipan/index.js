@@ -1,4 +1,4 @@
-import { addReport } from '../../utils/cloud';
+import { addReport, saveUserBirthDate } from '../../utils/cloud';
 
 const { calculateBazi, getShichenList } = require('../../utils/bazi');
 const { REGIONS, resolveLocation } = require('../../utils/regions');
@@ -185,8 +185,11 @@ Page({
       );
       const app = getApp();
 
+      const userId = app.globalData.openid || 'local';
+      await saveUserBirthDate(userId, this.data.birthDate);
+
       const reportId = await addReport({
-        userId: app.globalData.openid || 'local',
+        userId,
         birthInfo: {
           name: this.data.name,
           solarDate: this.data.birthDate,

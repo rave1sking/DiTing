@@ -134,8 +134,24 @@ exports.main = async (event) => {
 
 function formatBaziForPrompt(baziRaw) {
   if (!baziRaw) return '无数据';
-  const { pillars, dayMaster, dayMasterElement, wuxingCount } = baziRaw;
-  return `四柱: ${baziRaw.baziString}, 日主: ${dayMaster}(${dayMasterElement}), 五行统计: 金${wuxingCount['金']}木${wuxingCount['木']}水${wuxingCount['水']}火${wuxingCount['火']}土${wuxingCount['土']}`;
+  const { dayMaster, dayMasterElement, wuxingCount, enrichedPillars, dayun, shenSha, kongWang } = baziRaw;
+  let text = `四柱: ${baziRaw.baziString}, 日主: ${dayMaster}(${dayMasterElement}), 五行: 金${wuxingCount['金']}木${wuxingCount['木']}水${wuxingCount['水']}火${wuxingCount['火']}土${wuxingCount['土']}`;
+  if (enrichedPillars) {
+    const parts = ['year', 'month', 'day', 'time'].map((k) => {
+      const p = enrichedPillars[k];
+      if (!p) return '';
+      return `${p.label || k}${p.full}(${p.nayin},${p.ganShishen})`;
+    }).filter(Boolean);
+    text += `; 纳音十神: ${parts.join(' ')}`;
+  }
+  if (kongWang && kongWang.length) text += `; 空亡: ${kongWang.join('')}`;
+  if (dayun && dayun.list) {
+    text += `; 大运${dayun.direction}: ${dayun.list.slice(0, 4).map((d) => d.full).join('→')}`;
+  }
+  if (shenSha && shenSha.length) {
+    text += `; 神煞: ${shenSha.slice(0, 5).map((s) => s.name).join('、')}`;
+  }
+  return text;
 }
 
 function callDeepSeek(prompt, type) {

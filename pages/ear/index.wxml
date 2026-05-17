@@ -24,8 +24,10 @@
           style="left:{{item.x}}%;top:{{item.y}}%;animation-delay:{{item.delay}}s">✨</view>
       </view>
     </view>
-    <text class="ear__hint" wx:if="{{!hasCheckedIn}}">轻触谛听的灵耳，接收今日好运</text>
-    <text class="ear__hint ear__hint--done" wx:else>今日已打卡，明天再来哦~</text>
+    <text class="ear__hint" wx:if="{{!hasCheckedIn}}">轻触谛听的灵耳，接收今日好运与星座运势</text>
+    <text class="ear__hint ear__hint--done" wx:else>
+      今日已打卡{{zodiacPreview ? '，点击灵耳查看' + zodiacPreview + '今日运势' : ''}}
+    </text>
   </view>
 
   <!-- 好运签卡片 -->
@@ -38,9 +40,46 @@
       </view>
       <view class="ear__card-text">{{fortuneText}}</view>
       <view class="ear__card-footer">
-        <text class="ear__card-date">{{todayDate}}</text>
-        <text class="ear__card-lingli" wx:if="{{earnedLingli}}">+{{earnedLingli}} 灵力</text>
+        <text class="ear__card-footer-line">
+          <text class="ear__card-date">{{todayDate}}</text>
+          <text class="ear__card-lingli" wx:if="{{earnedLingli}}">+{{earnedLingli}}灵力</text>
+        </text>
       </view>
+      <!-- 今日星座运势 -->
+      <view class="ear__horoscope" wx:if="{{horoscope}}">
+        <view class="ear__horoscope-head">
+          <text class="ear__horoscope-sign">{{horoscope.symbol}} {{horoscope.signName}}</text>
+          <text class="ear__horoscope-stars">{{horoscope.overallStars}}</text>
+        </view>
+        <view class="ear__horoscope-summary">{{horoscope.overall}}</view>
+        <view class="ear__horoscope-scores">
+          <view class="ear__horoscope-score-item">
+            <text class="ear__horoscope-score-label">爱情</text>
+            <text class="ear__horoscope-score-stars">{{horoscope.loveStars}}</text>
+          </view>
+          <view class="ear__horoscope-score-item">
+            <text class="ear__horoscope-score-label">事业</text>
+            <text class="ear__horoscope-score-stars">{{horoscope.careerStars}}</text>
+          </view>
+          <view class="ear__horoscope-score-item">
+            <text class="ear__horoscope-score-label">健康</text>
+            <text class="ear__horoscope-score-stars">{{horoscope.wellnessStars}}</text>
+          </view>
+        </view>
+        <view class="ear__horoscope-detail">
+          <text class="ear__horoscope-line">💕 {{horoscope.love}}</text>
+          <text class="ear__horoscope-line">💼 {{horoscope.career}}</text>
+        </view>
+        <view class="ear__horoscope-lucky">
+          <text>幸运色 {{horoscope.luckyColor}}</text>
+          <text>幸运数 {{horoscope.luckyNumber}}</text>
+        </view>
+      </view>
+      <view class="ear__horoscope-empty" wx:elif="{{showCard && !hasBirthDate}}" bindtap="goPaipan">
+        <text>✨ 填写出生日期，解锁专属星座运势</text>
+        <text class="ear__horoscope-link">去灵耳排盘 →</text>
+      </view>
+
       <view class="ear__card-actions">
         <view class="ear__card-btn" bindtap="shareFortune">
           <text>📤 分享好运</text>

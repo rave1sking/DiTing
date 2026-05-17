@@ -12,15 +12,69 @@
         <text class="report__pillar-zhi">{{item.zhi}}</text>
       </view>
     </view>
+    <!-- 四柱详情：纳音、十神、藏干 -->
+    <view class="report__pillar-detail" wx:for="{{pillarDetails}}" wx:key="label">
+      <view class="report__pillar-detail-head">
+        <text class="report__pillar-detail-label">{{item.label}}</text>
+        <text class="report__pillar-detail-gz">{{item.gan}}{{item.zhi}}</text>
+        <text class="report__pillar-detail-nayin">{{item.nayin}}</text>
+      </view>
+      <view class="report__pillar-detail-row">
+        <text class="report__pillar-detail-tag">{{item.ganShishen}}</text>
+        <text class="report__pillar-detail-cang" wx:if="{{item.cangGanText}}">藏：{{item.cangGanText}}</text>
+      </view>
+    </view>
+
     <view class="report__bazi-meta">
       <text>日主：{{dayMaster}}（{{dayMasterElement}}）</text>
       <text>{{lunarInfo}}</text>
     </view>
+    <view wx:if="{{kongWangText}}" class="report__bazi-extra">{{kongWangText}}</view>
+    <view wx:if="{{qiYunText}}" class="report__bazi-extra">{{qiYunText}}</view>
     <view wx:if="{{birthPlaceText || currentPlaceText}}" class="report__bazi-places">
       <text wx:if="{{birthPlaceText}}">出生地：{{birthPlaceText}}</text>
       <text wx:if="{{currentPlaceText}}">所在地：{{currentPlaceText}}</text>
     </view>
     <view wx:if="{{solarTimeTip}}" class="report__bazi-tip">{{solarTimeTip}}</view>
+  </view>
+
+  <!-- 十神统计 -->
+  <view class="report__trad-card" wx:if="{{shishenSummary.length > 0}}">
+    <view class="report__trad-title">十神分布</view>
+    <view class="report__shishen-tags">
+      <view class="report__shishen-tag" wx:for="{{shishenSummary}}" wx:key="name">
+        <text class="report__shishen-name">{{item.name}}</text>
+        <text class="report__shishen-count">×{{item.count}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 大运 -->
+  <view class="report__trad-card" wx:if="{{dayunList.length > 0}}">
+    <view class="report__trad-title">大运流年</view>
+    <view class="report__dayun-list">
+      <view class="report__dayun-item" wx:for="{{dayunList}}" wx:key="index">
+        <text class="report__dayun-age">{{item.ageRange}}</text>
+        <text class="report__dayun-gz">{{item.full}}</text>
+        <text class="report__dayun-nayin">{{item.nayin}}</text>
+      </view>
+    </view>
+    <view class="report__liunian-title" wx:if="{{liuNianList.length > 0}}">近年流年</view>
+    <view class="report__liunian-list" wx:if="{{liuNianList.length > 0}}">
+      <view class="report__liunian-item" wx:for="{{liuNianList}}" wx:key="year">
+        <text class="report__liunian-year">{{item.year}}</text>
+        <text class="report__liunian-gz">{{item.full}}</text>
+        <text class="report__liunian-ss">{{item.shishen}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 神煞 -->
+  <view class="report__trad-card" wx:if="{{shenShaList.length > 0}}">
+    <view class="report__trad-title">神煞</view>
+    <view class="report__shensha-tags">
+      <text class="report__shensha-tag" wx:for="{{shenShaList}}" wx:key="*this">{{item}}</text>
+    </view>
   </view>
 
   <!-- 姓名五格 -->

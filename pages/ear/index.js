@@ -1,4 +1,6 @@
-import { checkin } from '../../utils/cloud';
+import { checkin, getUserBirthDate } from '../../utils/cloud';
+
+const { getTodayHoroscope, getZodiacFromBirthDate } = require('../../utils/horoscope');
 
 const app = getApp();
 
@@ -44,6 +46,10 @@ Page({
     todayDate: '',
     progressPercent: 0,
     sparkles: [],
+    horoscope: null,
+    hasBirthDate: false,
+    zodiacPreview: '',
+    showHoroscopeCard: false,
   },
 
   onShow() {
@@ -51,6 +57,37 @@ Page({
     const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     this.setData({ todayDate: dateStr });
     this.checkTodayStatus();
+    this.loadBirthDatePreview();
+  },
+
+  async loadBirthDatePreview() {
+    try {
+      const userId = app.globalData.openid || 'local';
+      const res = await getUserBirthDate(userId);
+      if (res && res.birthDate) {
+        const zodiac = getZodiacFromBirthDate(res.birthDate);
+        this.setData({
+          hasBirthDate: true,
+          zodiacPreview: zodiac ? `${zodiac.symbol} ${zodiac.name}` : '',
+        });
+      } else {
+        this.setData({ hasBirthDate: false, zodiacPreview: '' });
+      }
+    } catch (e) {
+      this.setData({ hasBirthDate: false, zodiacPreview: '' });
+    }
+  },
+
+  async loadHoroscope() {
+    const userId = app.globalData.openid || 'local';
+    const res = await getUserBirthDate(userId);
+    if (!res || !res.birthDate) {
+      this.setData({ horoscope: null, hasBirthDate: false });
+      return null;
+    }
+    const horoscope = getTodayHoroscope(res.birthDate, this.data.todayDate);
+    this.setData({ horoscope, hasBirthDate: true, showHoroscopeCard: true });
+    return horoscope;
   },
 
   checkTodayStatus() {
@@ -67,7 +104,23 @@ Page({
   },
 
   async onTouchEar() {
-    if (this.data.hasCheckedIn || this.data.animating) return;
+    if (this.data.animating) return;
+
+    if (this.data.hasCheckedIn) {
+      wx.vibrateShort({ type: 'light' });
+      const horoscope = await this.loadHoroscope();
+      if (!horoscope) {
+        wx.showModal({
+          title: '暂无出生日期',
+          content: '请先在「灵耳排盘」填写出生日期，即可查看专属星座运势。',
+          confirmText: '去排盘',
+          success: (res) => { if (res.confirm) this.goPaipan(); },
+        });
+        return;
+      }
+      this.setData({ showCard: true });
+      return;
+    }
 
     this.setData({
       animating: true,
@@ -87,7 +140,8 @@ Page({
         const fortuneIdx = this.getDateHash(this.data.todayDate) % FORTUNE_TEXTS.length;
         const fortuneText = result.fortuneText || FORTUNE_TEXTS[fortuneIdx];
 
-        setTimeout(() => {
+        setTimeout(async () => {
+          await this.loadHoroscope();
           this.setData({
             animating: false,
             hasCheckedIn: true,
@@ -126,6 +180,10 @@ Page({
 
   shareFortune() {
     wx.navigateTo({ url: `/pages/poster/index?type=fortune&text=${encodeURIComponent(this.data.fortuneText)}` });
+  },
+
+  goPaipan() {
+    wx.navigateTo({ url: '/pages/paipan/index' });
   },
 
   onShareAppMessage() {

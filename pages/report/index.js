@@ -1,4 +1,6 @@
-import { getReport, generateAIReport, spendLingli } from '../../utils/cloud';
+import { getReport, generateAIReport, spendLingli, updateReport } from '../../utils/cloud';
+
+const { showRewardedVideo, preloadRewardedVideo } = require('../../utils/ad');
 
 const app = getApp();
 
@@ -15,6 +17,13 @@ Page({
     currentPlaceText: '',
     solarTimeTip: '',
     pillarLabels: [],
+    pillarDetails: [],
+    kongWangText: '',
+    qiYunText: '',
+    dayunList: [],
+    liuNianList: [],
+    shenShaList: [],
+    shishenSummary: [],
     dayMaster: '',
     dayMasterElement: '',
     lunarInfo: '',
@@ -27,6 +36,7 @@ Page({
   },
 
   onLoad(options) {
+    preloadRewardedVideo();
     if (options.id) {
       this.setData({ reportId: options.id });
       this.loadReport(options.id);
@@ -41,7 +51,10 @@ Page({
         return;
       }
 
-      const { pillars, dayMaster, dayMasterElement, wuxingEnergy, nameAnalysis, solarTimeInfo } = report.baziRaw;
+      const {
+        pillars, dayMaster, dayMasterElement, wuxingEnergy, nameAnalysis, solarTimeInfo,
+        enrichedPillars, kongWang, qiYun, dayun, liuNian, shenSha, shishenSummary,
+      } = report.baziRaw;
       const lunar = report.baziRaw.lunar;
       const userName = report.birthInfo.name || report.baziRaw.name || '';
 
@@ -69,18 +82,79 @@ Page({
         solarTimeTip = `已按出生地经度校正真太阳时（${sign}${solarTimeInfo.diffMinutes}分）`;
       }
 
+      const ep = enrichedPillars || {};
+      const pillarKeys = [
+        { key: 'year', label: '年柱' },
+        { key: 'month', label: '月柱' },
+        { key: 'day', label: '日柱' },
+        { key: 'time', label: '时柱' },
+      ];
+      const pillarLabels = pillarKeys.map(({ key, label }) => ({
+        label,
+        gan: pillars[key].gan,
+        zhi: pillars[key].zhi,
+      }));
+      const pillarDetails = pillarKeys.map(({ key, label }) => {
+        const p = ep[key] || pillars[key];
+        const cangGanText = (p.cangGan || [])
+          .map((c) => `${c.gan}(${c.shishen})`)
+          .join(' ');
+        return {
+          label,
+          gan: p.gan,
+          zhi: p.zhi,
+          nayin: p.nayin || '',
+          ganShishen: p.ganShishen || '',
+          cangGanText,
+        };
+      });
+
+      const kongWangText = kongWang && kongWang.length
+        ? `日柱空亡：${kongWang.join('、')}`
+        : '';
+
+      let qiYunText = '';
+      if (qiYun && dayun) {
+        qiYunText = `大运${dayun.direction}，${qiYun.startAgeText}起运（距${qiYun.targetJie || '节'}${qiYun.days || 0}天）`;
+      }
+
+      const dayunList = (dayun && dayun.list) ? dayun.list.map((d) => ({
+        ...d,
+        shishen: '', // filled below if we have dayMaster
+      })) : (report.baziRaw.dayunList || []);
+
+      const liuNianNear = (liuNian && liuNian.nearFuture) ? liuNian.nearFuture : [];
+      const liuNianList = liuNianNear.slice(0, 6).map((ln) => ({
+        year: ln.year,
+        full: ln.full,
+        nayin: ln.nayin,
+        shishen: ln.shishen,
+        age: ln.age,
+      }));
+
+      const shenShaList = (shenSha || []).map((s) => `${s.name}(${s.source})`);
+
+      const shishenSummaryList = shishenSummary
+        ? Object.keys(shishenSummary).map((name) => ({
+          name,
+          count: Math.round(shishenSummary[name] * 10) / 10,
+        }))
+        : [];
+
       this.setData({
         userName,
         nameGrids,
         birthPlaceText,
         currentPlaceText,
         solarTimeTip,
-        pillarLabels: [
-          { label: '年柱', gan: pillars.year.gan, zhi: pillars.year.zhi },
-          { label: '月柱', gan: pillars.month.gan, zhi: pillars.month.zhi },
-          { label: '日柱', gan: pillars.day.gan, zhi: pillars.day.zhi },
-          { label: '时柱', gan: pillars.time.gan, zhi: pillars.time.zhi },
-        ],
+        pillarLabels,
+        pillarDetails,
+        kongWangText,
+        qiYunText,
+        dayunList,
+        liuNianList,
+        shenShaList,
+        shishenSummary: shishenSummaryList,
         dayMaster,
         dayMasterElement,
         lunarInfo: lunar ? (lunar.text || `农历${lunar.year}年${lunar.month}月${lunar.day}`) : '',
@@ -130,22 +204,48 @@ Page({
     wx.showModal({
       title: '深度解析',
       content: '将消耗10灵力值解锁深度解析报告，确定继续？',
-      success: async (res) => { if (res.confirm) await this.doGenerateDeep(); },
+      success: async (res) => { if (res.confirm) await this.doGenerateDeep({ viaAd: false }); },
     });
   },
 
   async watchAdForDeep() {
-    wx.showToast({ title: '广告功能开发中', icon: 'none' });
+    if (this.data.deepLoading || this.data.deepReport) return;
+
+    wx.showLoading({ title: '加载广告...', mask: true });
+    try {
+      const completed = await showRewardedVideo();
+      wx.hideLoading();
+      if (!completed) {
+        wx.showToast({ title: '需完整观看广告才能解锁', icon: 'none' });
+        return;
+      }
+      await this.doGenerateDeep({ viaAd: true });
+    } catch (err) {
+      wx.hideLoading();
+      console.error('激励广告解锁失败:', err);
+      wx.showToast({ title: err.message || '广告暂不可用', icon: 'none' });
+    }
   },
 
-  async doGenerateDeep() {
+  async doGenerateDeep(options = {}) {
+    const { viaAd = false } = options;
     this.setData({ deepLoading: true });
     try {
-      await spendLingli(10, 'report', this.data.reportId);
-      app.refreshLingli();
+      if (!viaAd) {
+        await spendLingli(10, 'report', this.data.reportId);
+        app.refreshLingli();
+      } else {
+        await updateReport(this.data.reportId, { deepUnlockedVia: 'ad' });
+      }
       const result = await generateAIReport(this.data.reportId, 'deep');
       if (result && result.success && result.data.deepReport) {
         this.setData({ deepReport: result.data.deepReport });
+        wx.showToast({
+          title: viaAd ? '观看完成，已解锁' : '解锁成功',
+          icon: 'success',
+        });
+      } else {
+        wx.showToast({ title: '生成失败，请重试', icon: 'none' });
       }
     } catch (err) {
       console.error('深度解析失败:', err);

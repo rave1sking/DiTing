@@ -74,11 +74,74 @@ export async function login() {
   return result;
 }
 
+/** 保存用户出生日期（排盘时写入，供灵耳星座运势使用） */
+export async function saveUserBirthDate(userId, birthDate) {
+  if (!birthDate) return { success: false };
+  if (config.useMock) {
+    const user = mockGetUser();
+    user.birthDate = birthDate;
+    user.birthDateUpdatedAt = new Date().toISOString();
+    mockSaveUser(user);
+    return { success: true, birthDate };
+  }
+  const db = getDb();
+  try {
+    await db.collection('users').doc(userId).update({
+      data: { birthDate, birthDateUpdatedAt: db.serverDate() },
+    });
+  } catch (e) {
+    await db.collection('users').doc(userId).set({
+      data: { birthDate, birthDateUpdatedAt: db.serverDate() },
+    });
+  }
+  return { success: true, birthDate };
+}
+
+/** 获取用户出生日期：优先用户档案，其次最近排盘报告 */
+export async function getUserBirthDate(userId) {
+  if (config.useMock) {
+    const user = mockGetUser();
+    if (user.birthDate) {
+      return { success: true, birthDate: user.birthDate, source: 'profile' };
+    }
+    const reports = mockGetReports();
+    const sorted = [...reports].sort((a, b) => {
+      const ta = a.createdAt || '';
+      const tb = b.createdAt || '';
+      return tb.localeCompare(ta);
+    });
+    const match = sorted.find((r) => r.birthInfo && r.birthInfo.solarDate);
+    if (match) {
+      return { success: true, birthDate: match.birthInfo.solarDate, source: 'report' };
+    }
+    return { success: false, birthDate: null };
+  }
+  const db = getDb();
+  try {
+    const { data: user } = await db.collection('users').doc(userId).get();
+    if (user && user.birthDate) {
+      return { success: true, birthDate: user.birthDate, source: 'profile' };
+    }
+    const { data: reports } = await db.collection('reports')
+      .where({ userId })
+      .orderBy('createdAt', 'desc')
+      .limit(1)
+      .get();
+    if (reports[0] && reports[0].birthInfo && reports[0].birthInfo.solarDate) {
+      return { success: true, birthDate: reports[0].birthInfo.solarDate, source: 'report' };
+    }
+  } catch (e) {
+    console.warn('getUserBirthDate failed', e);
+  }
+  return { success: false, birthDate: null };
+}
+
 export async function updateProfile(userInfo) {
   if (config.useMock) {
     const user = mockGetUser();
     if (userInfo.nickName) user.nickName = userInfo.nickName;
     if (userInfo.avatarUrl) user.avatarUrl = userInfo.avatarUrl;
+    if (userInfo.birthDate) user.birthDate = userInfo.birthDate;
     mockSaveUser(user);
     return { success: true };
   }
