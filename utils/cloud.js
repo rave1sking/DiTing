@@ -4,6 +4,7 @@
  * useMock=false 时透传到真实云开发
  */
 import config from '../config';
+import { DEFAULT_USER_SETTINGS, SETTINGS_CONTENT, mergeUserSettings } from './settingsDefaults';
 
 let _db = null;
 
@@ -26,7 +27,9 @@ function mockGetUser() {
     consecutiveCheckIns: 0,
     lastCheckInDate: '',
     inviterId: '',
+    settings: { ...DEFAULT_USER_SETTINGS },
   };
+  if (!user.settings) user.settings = { ...DEFAULT_USER_SETTINGS };
   wx.setStorageSync('mock_user', user);
   return user;
 }
@@ -305,6 +308,57 @@ export async function getLingliHistory(page) {
     return { success: true, data: slice, hasMore: start + pageSize < txns.length };
   }
   const { result } = await wx.cloud.callFunction({ name: 'lingli', data: { action: 'getHistory', page } });
+  return result;
+}
+
+export async function getUserSettings() {
+  if (config.useMock) {
+    const user = mockGetUser();
+    return { success: true, settings: mergeUserSettings(user.settings) };
+  }
+  const { result } = await wx.cloud.callFunction({
+    name: 'settings',
+    data: { action: 'getSettings' },
+  });
+  return result;
+}
+
+export async function updateUserSettings(patch) {
+  if (config.useMock) {
+    const user = mockGetUser();
+    const next = mergeUserSettings({ ...user.settings, ...patch });
+    user.settings = next;
+    mockSaveUser(user);
+    return { success: true, settings: next };
+  }
+  const { result } = await wx.cloud.callFunction({
+    name: 'settings',
+    data: { action: 'updateSettings', settings: patch },
+  });
+  return result;
+}
+
+export async function getSettingsContent(contentType) {
+  if (config.useMock) {
+    const content = SETTINGS_CONTENT[contentType];
+    if (!content) return { success: false, error: '无效内容类型' };
+    return { success: true, content };
+  }
+  const { result } = await wx.cloud.callFunction({
+    name: 'settings',
+    data: { action: 'getContent', contentType },
+  });
+  return result;
+}
+
+export async function logout() {
+  if (config.useMock) {
+    return { success: true };
+  }
+  const { result } = await wx.cloud.callFunction({
+    name: 'settings',
+    data: { action: 'logout' },
+  });
   return result;
 }
 

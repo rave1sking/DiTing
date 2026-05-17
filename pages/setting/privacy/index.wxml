@@ -1,0 +1,25 @@
+<view class="setting-sub">
+  <view class="setting-sub__loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <view class="setting-sub__group" wx:else>
+    <view class="setting-sub__item" wx:for="{{items}}" wx:key="key">
+      <view class="setting-sub__item-text">
+        <text class="setting-sub__label">{{item.label}}</text>
+        <text class="setting-sub__desc">{{item.desc}}</text>
+      </view>
+      <switch
+        checked="{{settings[item.key]}}"
+        color="#8B5CF6"
+        data-key="{{item.key}}"
+        bindchange="onSwitchChange"
+        disabled="{{saving}}"
+      />
+    </view>
+  </view>
+
+  <view class="setting-sub__hint" wx:if="{{!loading}}">
+    <text>我们仅在提供服务所必需的范围内使用您的信息，详见《隐私政策》。</text>
+  </view>
+</view>

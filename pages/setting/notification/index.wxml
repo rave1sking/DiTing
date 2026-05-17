@@ -1,0 +1,25 @@
+<view class="setting-sub">
+  <view class="setting-sub__loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <view class="setting-sub__group" wx:else>
+    <view class="setting-sub__item" wx:for="{{items}}" wx:key="key">
+      <view class="setting-sub__item-text">
+        <text class="setting-sub__label">{{item.label}}</text>
+        <text class="setting-sub__desc">{{item.desc}}</text>
+      </view>
+      <switch
+        checked="{{settings[item.key]}}"
+        color="#8B5CF6"
+        data-key="{{item.key}}"
+        bindchange="onSwitchChange"
+        disabled="{{saving}}"
+      />
+    </view>
+  </view>
+
+  <view class="setting-sub__hint" wx:if="{{!loading}}">
+    <text>关闭后仍可在微信「服务通知」中管理订阅消息（需后续接入模板消息）。</text>
+  </view>
+</view>

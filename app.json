@@ -46,7 +46,12 @@
     {
       "root": "pages/setting",
       "name": "setting",
-      "pages": ["index"]
+      "pages": [
+        "index",
+        "notification/index",
+        "privacy/index",
+        "content/index"
+      ]
     }
   ],
   "window": {

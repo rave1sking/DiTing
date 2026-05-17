@@ -1,0 +1,17 @@
+<view class="setting-content">
+  <view class="setting-content__loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <view class="setting-content__error" wx:elif="{{error}}">
+    <text>{{error}}</text>
+  </view>
+
+  <view class="setting-content__card" wx:else>
+    <text class="setting-content__updated" wx:if="{{content.updatedAt}}">更新日期：{{content.updatedAt}}</text>
+    <view class="setting-content__section" wx:for="{{content.sections}}" wx:key="heading">
+      <text class="setting-content__heading">{{item.heading}}</text>
+      <text class="setting-content__body">{{item.body}}</text>
+    </view>
+  </view>
+</view>

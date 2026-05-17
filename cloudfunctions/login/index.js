@@ -37,6 +37,13 @@ async function silentLogin(openid) {
       consecutiveCheckIns: 0,
       lastCheckInDate: '',
       inviterId: '',
+      settings: {
+        notifyReport: true,
+        notifyCheckin: true,
+        notifyMarketing: false,
+        privacyShowProfile: true,
+        privacyPersonalized: true,
+      },
       createdAt: db.serverDate(),
       updatedAt: db.serverDate(),
     };
