@@ -1,8 +1,8 @@
 import { addReport, saveUserBirthDate } from '../../utils/cloud';
 
-const { calculateBazi, getShichenList } = require('../../utils/bazi');
-const { REGIONS, resolveLocation } = require('../../utils/regions');
-const { solarToLunar, formatLunar } = require('../../utils/lunar');
+const { calculateBazi, getShichenList } = require('./utils/bazi');
+const { REGIONS, resolveLocation } = require('./utils/regions');
+const { solarToLunar, formatLunar } = require('./utils/lunar');
 
 const shichenList = getShichenList();
 const provinceOptions = REGIONS.map((p, i) => ({ label: p.name, value: i }));

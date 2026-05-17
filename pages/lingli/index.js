@@ -1,6 +1,6 @@
 import { getLingliHistory, earnLingli } from '../../utils/cloud';
 
-const { showRewardedVideo } = require('../../utils/ad');
+const { showRewardedVideo } = require('./utils/ad');
 
 const app = getApp();
 

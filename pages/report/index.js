@@ -1,6 +1,6 @@
 import { getReport, generateAIReport, spendLingli, updateReport } from '../../utils/cloud';
 
-const { showRewardedVideo, preloadRewardedVideo } = require('../../utils/ad');
+const { showRewardedVideo, preloadRewardedVideo } = require('./utils/ad');
 
 const app = getApp();
 

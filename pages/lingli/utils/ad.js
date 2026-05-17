@@ -2,7 +2,7 @@
  * 激励视频广告（wx.createRewardedVideoAd）
  * 正式环境请在 config.js 配置 rewardedVideoAdUnitId
  */
-import config from '../config.js';
+import config from '../../../config.js';
 
 let rewardedVideoAd = null;
 let closeHandler = null;

@@ -1,7 +1,7 @@
 /**
  * 构建 regions.js 数据
  * 输入：pca-code.json（modood 省市区三级结构）+ city-geo.json（88250 含经纬度）
- * 输出：utils/regions.js
+ * 输出：pages/paipan/utils/regions.js
  */
 
 const fs = require('fs');
@@ -265,9 +265,9 @@ module.exports = {
 };
 `);
 
-const outPath = path.join(__dirname, '..', 'utils', 'regions.js');
+const outPath = path.join(__dirname, '..', 'pages', 'paipan', 'utils', 'regions.js');
 fs.writeFileSync(outPath, jsLines.join('\n'), 'utf8');
-console.log('utils/regions.js 生成完毕，文件大小:', fs.statSync(outPath).size, 'bytes');
+console.log('pages/paipan/utils/regions.js 生成完毕，文件大小:', fs.statSync(outPath).size, 'bytes');
 
 // 输出统计：每省城市数、每市区县数
 let totalCities = 0;
