@@ -364,20 +364,13 @@ export async function logout() {
 
 export async function generateAIReport(reportId, type) {
   if (config.useMock) {
-    // Mock AI 生成结果
-    const mockResults = {
-      summary: '林间初雪，待时而发',
-      energy: { energy: { '金': 65, '木': 45, '水': 70, '火': 30, '土': 55 }, interpretation: '今日水气充盈，灵感与智慧并行' },
-      deep: {
-        career: { score: 78, analysis: '当前事业运势平稳上升，适合主动争取新机会。你的沟通能力正处于高峰期，善用这一优势。', advice: ['主动与上级沟通想法，展现自己的能力', '本周适合启动新项目或学习新技能', '注意劳逸结合，避免过度消耗精力'] },
-        wealth: { score: 65, analysis: '财运趋于稳定，偏财运有小幅波动。适合做好规划，稳中求进。', advice: ['控制非必要支出，建立储蓄习惯', '关注身边的小机会，可能带来意外收获', '避免冲动投资，多做功课再决策'] },
-        love: { score: 82, analysis: '感情能量充沛，桃花运正旺。无论单身还是有伴，都是增进感情的好时期。', advice: ['多参加社交活动，扩大交友圈', '对伴侣多一些耐心和理解', '表达真实感受，不要压抑情绪'] },
-      },
-    };
-
-    const data = type === 'summary' ? { summary: mockResults.summary }
-      : type === 'energy' ? { energyData: mockResults.energy }
-      : { deepReport: mockResults.deep };
+    const report = await getReport(reportId);
+    const baziRaw = report?.baziRaw || {};
+    const data = type === 'summary'
+      ? { summary: buildMockSummary(report) }
+      : type === 'energy'
+        ? { energyData: buildMockEnergy(baziRaw) }
+        : { deepReport: buildMockDeep(baziRaw) };
 
     await updateReport(reportId, data);
     return { success: true, data, type };
@@ -387,6 +380,41 @@ export async function generateAIReport(reportId, type) {
 }
 
 // ======================== 辅助函数 ========================
+
+function buildMockSummary(report) {
+  const baziRaw = report?.baziRaw || {};
+  const name = report?.birthInfo?.name || baziRaw.name || '你';
+  const dayMaster = baziRaw.dayMaster || '己';
+  const solar = report?.birthInfo?.solarDate || '';
+  const time = report?.birthInfo?.shichenName || '未知时辰';
+  const prompts = [
+    '先把步子迈稳，答案会在前方等你',
+    '把今天过好，光就会慢慢聚拢',
+    '稳住节奏，努力会替你开路',
+    '心里有光，前路就不会太暗',
+    '继续向前，属于你的好消息正在赶来',
+  ];
+  const seed = `${dayMaster}${solar}${time}${name}`;
+  const idx = hashStr(seed) % prompts.length;
+  return prompts[idx];
+}
+
+function buildMockEnergy(baziRaw) {
+  const wc = baziRaw.wuxingCount || { '金': 50, '木': 50, '水': 50, '火': 50, '土': 50 };
+  return {
+    energy: wc,
+    interpretation: `${baziRaw.dayMasterElement || '五行'}能量较醒，适合稳步推进`,
+  };
+}
+
+function buildMockDeep(baziRaw) {
+  const base = Math.max(1, (baziRaw.dayMaster || '己').charCodeAt(0) % 10);
+  return {
+    career: { score: 70 + base, analysis: '近期适合把想法落到纸面，再推进执行。', advice: ['先明确目标，再拆成小步', '适合主动表达自己的方案', '注意节奏，避免同时开太多战线'] },
+    wealth: { score: 60 + base, analysis: '财务上适合稳守，优先做好规划。', advice: ['先记账再消费', '减少冲动型开支', '把可预期收益放在前面'] },
+    love: { score: 68 + base, analysis: '关系互动有回暖趋势，真诚沟通最重要。', advice: ['多说具体感受', '给彼此留一点空间', '把关心落实到行动'] },
+  };
+}
 
 function getYesterday(dateStr) {
   const d = new Date(dateStr);

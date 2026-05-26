@@ -1,10 +1,17 @@
 <view class="paipan">
-  <view class="paipan__header">
-    <image class="paipan__header-img" src="/static/images/diting-avatar.svg" mode="aspectFit" />
-    <view class="paipan__header-text">
-      <text class="paipan__header-title">灵耳排盘</text>
-      <text class="paipan__header-desc">请告诉谛听你的生辰，聆听命运之音</text>
+  <view class="paipan__ambient paipan__ambient--one"></view>
+  <view class="paipan__ambient paipan__ambient--two"></view>
+
+  <view class="paipan__hero">
+    <view class="paipan__hero-badge">灵耳 · 排盘</view>
+    <view class="paipan__hero-main">
+      <image class="paipan__header-img" src="/static/images/diting-avatar.svg" mode="aspectFit" />
+      <view class="paipan__header-text">
+        <text class="paipan__header-title">灵耳排盘</text>
+        <text class="paipan__header-desc">输入生辰、性别与方位信息，生成更细腻的命盘画像</text>
+      </view>
     </view>
+    <view class="paipan__hero-note">性别字段保留，但不再显示乾坤二字，让信息更清爽直观</view>
   </view>
 
   <view class="paipan__form">
@@ -32,14 +39,14 @@
           bindtap="selectGender"
           data-gender="male"
         >
-          <text>♂ 乾（男）</text>
+          <text>男</text>
         </view>
         <view
           class="paipan__gender-btn {{gender === 'female' ? 'active' : ''}}"
           bindtap="selectGender"
           data-gender="female"
         >
-          <text>♀ 坤（女）</text>
+          <text>女</text>
         </view>
       </view>
     </view>
@@ -96,6 +103,7 @@
         bindtap="onSubmit"
       >
         <text>开始排盘</text>
+        <text class="paipan__submit-subtitle">生成专属灵耳命盘</text>
       </view>
     </view>
   </view>
@@ -109,6 +117,8 @@
     format="YYYY-MM-DD"
     start="1900-01-01"
     end="{{today}}"
+    confirm-btn="确定"
+    cancel-btn="取消"
     bindconfirm="onDateConfirm"
     bindcancel="onDateCancel"
   />
@@ -118,6 +128,8 @@
     visible="{{showShichenPicker}}"
     value="{{[shichenIndex]}}"
     title="选择出生时辰"
+    confirm-btn="确定"
+    cancel-btn="取消"
     bindconfirm="onShichenConfirm"
     bindcancel="onShichenCancel"
   >
@@ -129,6 +141,8 @@
     visible="{{showBirthRegionPicker}}"
     value="{{birthRegionValue}}"
     title="选择出生地"
+    confirm-btn="确定"
+    cancel-btn="取消"
     bindpick="onBirthRegionPick"
     bindconfirm="onBirthRegionConfirm"
     bindcancel="onBirthRegionCancel"
@@ -143,6 +157,8 @@
     visible="{{showCurrentRegionPicker}}"
     value="{{currentRegionValue}}"
     title="选择所在地"
+    confirm-btn="确定"
+    cancel-btn="取消"
     bindpick="onCurrentRegionPick"
     bindconfirm="onCurrentRegionConfirm"
     bindcancel="onCurrentRegionCancel"
